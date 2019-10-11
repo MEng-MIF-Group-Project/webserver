@@ -1,0 +1,31 @@
+{
+  "name": "omlette",
+  "version": "1.0.0",
+  "description": "Omlette is a webserver written in NodeJS, Express, and Pug which allows chemists in the MIF easy use of our MEng group project found at [mifproject1](https://github.com/jsduck/mifproject1)",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js",
+    "dev": "nodemon main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ADButterworth/Omlette.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ADButterworth/Omlette/issues"
+  },
+  "homepage": "https://github.com/ADButterworth/Omlette#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "nodemon": "^1.19.3",
+    "pug": "^2.0.4",
+    "sqlite3": "^4.1.0",
+    "uuid": "^3.3.3"
+  }
+}
