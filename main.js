@@ -20,15 +20,18 @@ app.use(express.static('public'));
 app.set('view engine', 'pug');
 
 // auth router
-app.get('/', function(req, res) {
+app.get('/', function(req, res, next) {
     if (!req.session.authed) {
         res.sendFile(__dirname + "/static/landing.html");
+    }
+    else{
+        res.redirect("/ptable");
     }
 });
 
 // login router
 var loginRouter = require("./routes/login.js");
-app.use('/login', loginRouter);
+app.use('/', loginRouter);
 
 // Authentication checker
 // This router is generic and must be first after login to function properly

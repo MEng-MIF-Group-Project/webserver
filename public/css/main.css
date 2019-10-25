@@ -1,3 +1,5 @@
+/* NB https://coolors.co/003d5b-fffcfb-565554-db5537-8c3723 */
+
 * {
     font-family: 'Red Hat Display', sans-serif;
 }
@@ -6,6 +8,7 @@ body {
     margin: 0;
 
     background: rgb(219,86,55);
+    background-color: rgb(219,86,55);
     background: -moz-linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
     background: -webkit-linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
     background: linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
@@ -31,15 +34,55 @@ body {
 
 /* NAV BAR */
 #topbar {
-  background: rgb(219,86,55);
-  overflow: hidden;
+  display: block;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  height: 89px; /* MUST BE CHANGED IF TOP BAR CHANGED */
 }
 
-#topbar a {
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li {
   float: left;
-  color: #18242d;
+}
+
+li a {
+  transition: background .2s ease-in;
+}
+
+li a, #logo {
+  display: block;
+  color: #fffcfb;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-  font-size: 17px;
+}
+
+#logo {
+  font-family: 'Source Code Pro', monospace;
+  padding: 14px 25px;
+  background-color: #003d5b;
+  font-size: 3em;
+  float: left;
+}
+
+li a:hover {
+  background-color: #8c3723;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+     -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+      user-select: none; /* Non-prefixed version, currently
+                  supported by Chrome and Opera */
 }
