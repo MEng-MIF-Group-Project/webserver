@@ -6,7 +6,7 @@
 
 body {
     margin: 0;
-
+    height: 100%;
     background: rgb(219,86,55);
     background-color: rgb(219,86,55);
     background: -moz-linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
