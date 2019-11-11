@@ -1,0 +1,16 @@
+#note.note
+img.pt-icon(src='img/periodictable.cf315c4e4483.png', style='visibility: visible;')
+.input-prepend
+    select.selectpicker(data-width='190px', style='display: none;')
+        optgroup(label='Explore Materials', data-route='search/materials')
+            option(data-placeholder='Na-O', data-key='elements', data-content="<span class='fontastic-search menu-icon'></span> by Elements")
+    .btn-group.bootstrap-select(style='width: 190px;')
+        button.btn.dropdown-toggle.selectpicker.btn-default(type='button', data-toggle='dropdown')
+            span.filter-option.pull-left
+            span.fontastic-search.menu-icon
+            |  by Elements
+        span.caret
+        .dropdown-menu.open(style='max-height:727px; overflow: hidden; min-height: 92px;')  
+    input#input-primary.search-query(type='text', placeholder='Na-O')
+    i#input-clear.icon-cancel
+    button#submit-search.btn.disabled(type='submit') search
