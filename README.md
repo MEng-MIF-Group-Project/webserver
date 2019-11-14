@@ -14,7 +14,7 @@ The webserver written in NodeJS, Express, and Pug which allows chemists in the M
 
  - [x] Base routing (Home, 404, and Login)
  - [ ] Login or Passcode authentication
- - [ ] Link to the other components (perhaps with scalable resourses to cope with system load?)
- - [ ] Database to store previous results
+ - [x] Link to the other components (perhaps with scalable resourses to cope with system load?)
+ - [x] Database to store previous results
  - [ ] Visualisations
- - [ ] Big ole periodic table
+ - [x] Big ole periodic table
