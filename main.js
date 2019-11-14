@@ -49,6 +49,10 @@ app.get('*', function (req, res, next) {
 var pTableRouter = require("./routes/periodicTable.js");
 app.use('/ptable', pTableRouter);
 
+// calc router
+var calc = require("./routes/calc.js");
+app.use('/', calc);
+
 // 404 Router
 // This is a generic router and must be last in the list to funtion correctly
 app.use(function(req, res) {
