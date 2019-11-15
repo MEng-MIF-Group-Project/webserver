@@ -1,15 +1,54 @@
 h3 Results
-// Have tabs for 2 calculators here in the future
-h4 Precursors
--var cols = ['Id', 'Formula', 'Li2S', 'Al2S3', 'Al2O3', 'LiAlO2', 'Li2O']
--var rows = [['00', 'LiAlSO', '0', '0.333', '0', '0.333', '0.333'], ['01', 'Li5AlS2O2', '0.5', '0.5', '0', '0', '2'], ['02', 'Li4Al2S3O2', '0', '1', '0', '0', '2'], ['03', 'Li3Al9S13O2', '0', '4.333', '0', '0.333', '1.333']]
-table.table
-    tr
-        each col in cols
-            th=col
+//Setup tabs for this section
+mixin tabs(tabsItems)
+    - var tabActive = function (t) { return t.active ? 'active' : '' }
 
-    tbody
-        each row in rows
-            tr
-                each col in row
-                    td=col
+    mixin tab(index)
+        - tabsItems[index].body = block;
+
+    block
+
+    - tabsItems[0].active = tabsItems[0].active || !tabsItems.some(function (t) { return t.active; })
+
+    div
+        ul.nav.nav-tabs(role="tablist")
+            each tab, index in tabsItems
+                li(role="presentation", class=tabActive(tab))
+                    a(href="#"+"tab-id-" + index, aria-controls="tab-id-" + index, role="tab", data-toggle="tab")
+                      if tab.icon
+                          span.icon(class=tab.icon)
+                      span= tab.title
+
+        .tab-content
+            each tab, index in tabsItems
+                .tab-pane(id="tab-id-" + index, role="tabpanel", class=tabActive(tab))
+                    - tab.body && tab.body()
+
+//Tab titles
+-
+  var data = [
+    { title: 'Precursors', active: true  },
+    { title: 'Stoichiometry'} ,
+    { title: 'XRD' }
+  ];
+
++tabs(data)
+   each tab, index in data
+        +tab(index)
+            if this.title === "Precursors"
+                -var cols = ['Id', 'Formula', 'Li2S', 'Al2S3', 'Al2O3', 'LiAlO2', 'Li2O']
+                -var rows = [['00', 'LiAlSO', '0', '0.333', '0', '0.333', '0.333'], ['01', 'Li5AlS2O2', '0.5', '0.5', '0', '0', '2'], ['02', 'Li4Al2S3O2', '0', '1', '0', '0', '2'], ['03', 'Li3Al9S13O2', '0', '4.333', '0', '0.333', '1.333']]
+                table.table
+                    tr
+                        each col in cols
+                            th=col
+
+                    tbody
+                        each row in rows
+                            tr
+                                each col in row
+                                    td=col
+            else if this.title === "Stoichiometry"
+                //TODO
+            else if this.title === "XRD"
+                //TODO
