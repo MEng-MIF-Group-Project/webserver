@@ -23,18 +23,30 @@ body
                 .col.align-self-center.noselect
                     | &nbsp;
             .row
-                h3 Input
-            .row
-                #searchfield
-                    form.searchbox
-                        include includes/searchbox.pug
-
-                    section#pt-section(style="display: block;")
-                        include includes/pt.pug
-                        script
-                            include ../public/js/ptable.js
-                    script
-                        include ../public/js/searchfield.js
+                .col.align-self-left
+                    .row
+                        h3 Input
+                    .row
+                        #searchfield
+                            form.searchbox
+                                include includes/searchbox.pug
+    
+                            section#pt-section(style="display: block;")
+                                include includes/pt.pug
+                                script
+                                   include ../public/js/ptable.js
+                            script
+                                include ../public/js/searchfield.js
+                .col
+                .col.align-self-right
+                    .row
+                        h3 Precursors
+                    .row
+                        #menubar
+                            include includes/menubar.pug
+                    .row
+                        include includes/precursorselect.pug
+                    
             br
             br
             br
@@ -46,13 +58,22 @@ body
                 .col.align-self-center
                     #results
                         include includes/results.pug
+
             .row
                 h3 Diagram
             .row
-                .col.align-self-center.align-items-center
-                    #diagram
-                        script
-                            include ../public/js/pdiagram.js
+                .col.align-self-left.align-items-left
+                    .row
+                        #diagram
+                            script
+                                include ../public/js/pdiagram.js
+                .col
+                .col.align-self-right
+                    br
+                    br
+                    br
+                    .row
+                        h5 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             br
             br
             br
