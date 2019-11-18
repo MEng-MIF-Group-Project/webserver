@@ -38,7 +38,7 @@ app.use('/', loginRouter);
 app.get('*', function (req, res, next) {
     if (!req.session.authed) {
         res.redirect('/');
-        console.log("Not Authed: " + req.session.authed)
+        console.log("Not Authed, sending to home");
     }
     else {
         next();

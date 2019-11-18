@@ -1,106 +1,106 @@
 /* NB https://coolors.co/003d5b-fffcfb-565554-db5537-8c3723 */
 
 * {
-    font-family: 'Red Hat Display', sans-serif;
+	font-family: 'Red Hat Display', sans-serif;
 }
 
 body {
-    margin: 0;
-    height: 100%;
-    background: rgb(219,86,55);
-    background-color: rgb(219,86,55);
-    background: -moz-linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
-    background: -webkit-linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
-    background: linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#db5637",endColorstr="#db6447",GradientType=1);
+	margin: 0;
+	height: 100%;
+	background: rgb(219,86,55);
+	background-color: rgb(219,86,55);
+	background: -moz-linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
+	background: -webkit-linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
+	background: linear-gradient(144deg, rgba(219,86,55,1) 0%, rgba(219,100,71,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#db5637",endColorstr="#db6447",GradientType=1);
 }
 
 .mainbox {
-    background: #fffcfb;
-    color: #18242d;
-    padding: 10px;
-    box-shadow: 0px 0px 10px 2px #888888;
+	background: #fffcfb;
+	color: #18242d;
+	padding: 10px;
+	box-shadow: 0px 0px 10px 2px #888888;
 
-    width: 425px;
-    height: auto;
+	width: 425px;
+	height: auto;
 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -250px 0 0 -175px;
-    text-align: center;
-    border-radius: 6px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -250px 0 0 -175px;
+	text-align: center;
+	border-radius: 6px;
 }
 
 /* NAV BAR */
 #topbar {
-  display: block;
-  top: 0;
-  left: 0;
-  overflow: auto;
-  height: 100px; /* MUST BE CHANGED IF TOP BAR CHANGED */
+	display: block;
+	top: 0;
+	left: 0;
+	overflow: auto;
+	height: 100px; /* MUST BE CHANGED IF TOP BAR CHANGED */
 }
 
 ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #333;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #333;
 }
 
 li {
-  float: left;
+	float: left;
 }
 
 li a {
-  transition: background .2s ease-in;
+	transition: background .2s ease-in;
 }
 
 li a, #logo {
-  display: block;
-  color: #fffcfb;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
+	display: block;
+	color: #fffcfb;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
 }
 
 #logo {
-  font-family: 'Source Code Pro', monospace;
-  padding: 14px 25px;
-  background-color: #003d5b;
-  font-size: 3em;
-  float: left;
+	font-family: 'Source Code Pro', monospace;
+	padding: 14px 25px;
+	background-color: #003d5b;
+	font-size: 3em;
+	float: left;
 }
 
 li a:hover {
-  background-color: #8c3723;
+	background-color: #8c3723;
 }
 
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-   -khtml-user-select: none; /* Konqueror HTML */
-     -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-      user-select: none; /* Non-prefixed version, currently
-                  supported by Chrome and Opera */
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	 -khtml-user-select: none; /* Konqueror HTML */
+		-moz-user-select: none; /* Firefox */
+		-ms-user-select: none; /* Internet Explorer/Edge */
+			user-select: none; /* Non-prefixed version, currently
+									supported by Chrome and Opera */
 }
 
 input[type='checkbox'] {
-    -webkit-appearance:none;
-    width:20px;
-    height:20px;
-    background:black;
-    border-radius:5px;
-    border:2px solid #555;
+	-webkit-appearance:none;
+	width:20px;
+	height:20px;
+	background:black;
+	border-radius:5px;
+	border:2px solid #555;
 }
 
 input[type='checkbox']:checked {
-    background: #fffcfb;
+	background: #fffcfb;
 }
 
 h6 {
-    text-align:center;
-    color: black;
+	text-align:center;
+	color: black;
 }

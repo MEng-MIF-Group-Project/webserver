@@ -4,8 +4,8 @@ head
 	link(href="https://fonts.googleapis.com/css?family=Red+Hat+Display&display=swap" rel="stylesheet")
 	link(href="https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap" rel="stylesheet")
 
-	link(rel="stylesheet" type="text/css" href="../../../../../../css/main.css")
-	link(rel="stylesheet" type="text/css" href="../../../../../../css/pt.css")
+	link(rel="stylesheet" type="text/css" href="/css/main.css")
+	link(rel="stylesheet" type="text/css" href="/css/pt.css")
 
 	script(src="https://cdn.plot.ly/plotly-latest.min.js")
 	script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
@@ -41,41 +41,44 @@ body
 					.row
 						include includes/menubar.pug
 					br
-					.row
-						h3 Precursors
-					.row
-						include includes/precursorselect.pug
-						script
-							include ../public/js/precursorselect.js
-			br
-			br
-			br
-			br
-			br
-			br
-			br
-			.row
-				h3 Results
-			.row
-				.col.align-self-center
-					#results
-						include includes/results.pug
-
-			.row
-				h3 Diagram
-			.row
-				.col.align-self-left.align-items-left
-					.row
-						#diagram
+					if precursors
+						.row
+							h3 Precursors
+						.row
+							include includes/precursorselect.pug
 							script
-								include ../public/js/pdiagram.js
-				.col
-				.col.align-self-right
-					br
-					br
-					br
-					.row
-						h5 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+								include ../public/js/precursorselect.js
 			br
 			br
 			br
+			br
+			br
+			br
+			br
+			if points
+				.row
+					h3 Results
+				.row
+					.col.align-self-center
+						#results
+							include includes/results.pug
+
+			if diagram
+				.row
+					h3 Diagram
+				.row
+					.col.align-self-left.align-items-left
+						.row
+							#diagram
+								script
+									include ../public/js/pdiagram.js
+					.col
+					.col.align-self-right
+						br
+						br
+						br
+						.row
+							h5 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+				br
+				br
+				br
