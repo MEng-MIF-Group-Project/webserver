@@ -1,5 +1,6 @@
 var chips = document.getElementsByClassName("chip");
-var input_field = document.getElementById("input-primary");
+var input_field = document.getElementById("inputPrimary");
+
 for (var i = 0; i < chips.length; ++i) {
     chips[i].addEventListener("click", function() {
         this.firstChild.classList.toggle("active");

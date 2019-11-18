@@ -6,6 +6,7 @@ window.post = function(url, data) {
 }
 
 submit_button.addEventListener("click", function(){
-	
+	//console.log(window.location.origin + "/calc/pre");
+	window.location.replace(window.location.origin + "/calc/stoich/" + input_field.value)
 });
 
