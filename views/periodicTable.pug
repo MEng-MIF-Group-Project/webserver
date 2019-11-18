@@ -1,76 +1,76 @@
 head
-    link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous")
-    
-    link(href="https://fonts.googleapis.com/css?family=Red+Hat+Display&display=swap" rel="stylesheet")
-    link(href="https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap" rel="stylesheet")
-    
-    link(rel="stylesheet" type="text/css" href="css/main.css")
-    link(rel="stylesheet" type="text/css" href="css/pt.css")
-    
-    script(src="jquery-3.4.1.min.js")
-    script(src="https://cdn.plot.ly/plotly-latest.min.js")
-    script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous")
-    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous")
+	link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous")
+
+	link(href="https://fonts.googleapis.com/css?family=Red+Hat+Display&display=swap" rel="stylesheet")
+	link(href="https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap" rel="stylesheet")
+
+	link(rel="stylesheet" type="text/css" href="css/main.css")
+	link(rel="stylesheet" type="text/css" href="css/pt.css")
+
+	script(src="jquery-3.4.1.min.js")
+	script(src="https://cdn.plot.ly/plotly-latest.min.js")
+	script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
+	script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous")
+	script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous")
 body
-    include includes/topbar.pug
+	include includes/topbar.pug
 
-    .container
-        .grid
-            .row
-                .col.align-self-center.noselect
-                    | &nbsp;
-            .row
-	            .col.align-self-left
-	                    .row
-	                        h3 Input
-	                    .row
-	                        #searchfield
-	                            form.searchbox
-	                                include includes/searchbox.pug
-	    
-	                            section#pt-section(style="display: block;")
-	                                include includes/pt.pug
-	                                script
-	                                   include ../public/js/ptable.js
-	                            script
-	                                include ../public/js/searchfield.js
-	            .col
-	            .col.align-self-right
-                    .row
-                        h3 Precursors
-                    .row
-                        #menubar
-                            include includes/menubar.pug
-                    .row
-                        include includes/precursorselect.pug
-            br
-            br
-            br
-            br
-            br
-            br
-            br
-            .row
-                .col.align-self-center
-                    #results
-                        include includes/results.pug
+	.container
+		.grid
+			.row
+				.col.align-self-center.noselect
+					| &nbsp;
+			.row
+				.col.align-self-left
+						.row
+							h3 Input
+						.row
+							#searchfield
+								form.searchbox
+									include includes/searchbox.pug
+		
+								section#pt-section(style="display: block;")
+									include includes/pt.pug
+									script
+										include ../public/js/ptable.js
+								script
+									include ../public/js/searchfield.js
+				.col
+				.col.align-self-right
+					.row
+						h3 Precursors
+					.row
+						#menubar
+							include includes/menubar.pug
+					.row
+						include includes/precursorselect.pug
+			br
+			br
+			br
+			br
+			br
+			br
+			br
+			.row
+				.col.align-self-center
+					#results
+						include includes/results.pug
 
-            .row
-                h3 Diagram
-            .row
-                .col.align-self-left.align-items-left
-                    .row
-                        #diagram
-                            script
-                                include ../public/js/pdiagram.js
-                .col
-                .col.align-self-right
-                    br
-                    br
-                    br
-                    .row
-                        h5 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            br
-            br
-            br
+			.row
+				h3 Diagram
+			.row
+				.col.align-self-left.align-items-left
+					.row
+						#diagram
+							script
+								include ../public/js/pdiagram.js
+				.col
+				.col.align-self-right
+					br
+					br
+					br
+					.row
+						h5 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+			br
+			br
+			br
