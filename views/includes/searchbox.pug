@@ -11,6 +11,8 @@ img.pt-icon(src='img/periodictable.cf315c4e4483.png', style='visibility: visible
             | Elements
         span.caret
         .dropdown-menu.open(style='max-height:727px; overflow: hidden; min-height: 92px;')  
-    input#input-primary.search-query(type='text', placeholder='Na-O')
+    input#inputPrimary.search-query(type='text', placeholder='Na-O')
     i#input-clear.icon-cancel
-    button#submit-search.btn.disabled(type='submit') search
+    button#submitSearch.btn(type='button') search
+    script
+        include ../../public/js/searchfield.js
