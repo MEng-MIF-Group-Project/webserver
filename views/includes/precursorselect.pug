@@ -1,0 +1,10 @@
+-var data = ['Li2S', 'Al2S3', 'Al2O3', 'LiAlO2', 'Li2O']
+
+.col.align-self-right.align-items-center
+    each prec in data
+        .row
+            h5 #{prec}
+            input(
+                type='checkbox'
+                name=prec.index
+            )
