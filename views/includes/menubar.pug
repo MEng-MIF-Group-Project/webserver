@@ -1,23 +1,27 @@
-#menubar
-    ul
-        li
-             h6 Option1
-        li
-            input(
-                type='checkbox'
-                name='Op1'
-                checked
-            )
-        li
-            h6 Option2
-        li
-            input(
-                type='checkbox'
-                name='Op2'
-                checked
-            )
-    ul
-        li
-            h6 Option3
-        li
-            input(type="text", name="MenuBarText1")
+div(style="max-width: 180px")
+    ul.list-group(style="min-width: 180px; margin-left: 10px;")
+        li.list-group-item
+            .row
+                .col
+                    h6 Option1
+                .col.self-align-right
+                    input(
+                        type='checkbox'
+                        name='Op1'
+                        checked)
+        li.list-group-item
+            .row
+                .col
+                    h6 Option2
+                .col.self-align-right
+                    input(
+                        type='checkbox'
+                        name='Op2'
+                        checked)
+    ul.list-group(style="min-width: 180px; margin-left: 10px;")
+        li.list-group-item
+            .row
+                .col
+                    h6 Option3
+                .col.self-align-right
+                    input(type="text", name="MenuBarText1", style="width: 100%")

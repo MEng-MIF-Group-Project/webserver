@@ -20,30 +20,33 @@ body
 			.row
 				.col.align-self-center.noselect
 					| &nbsp;
-			.row
-				.col.align-self-left
-						.row
-							h3 Input
-						.row
-							#searchfield
-								form.searchbox
-									include includes/searchbox.pug
+			.row(style="min-width: 1200px;")
+				.col.align-self-left(style="margin: 10px;")
+					.row
+						h3 Input
+					.row
+						#searchfield(style="margin: 10px;")
+							form.searchbox
+								include includes/searchbox.pug
 		
-								section#pt-section(style="display: block;")
-									include includes/pt.pug
-									script
-										include ../public/js/ptable.js
+							section#pt-section(style="display: block;")
+								include includes/pt.pug
 								script
-									include ../public/js/ptableToggle.js
-				.col
-				.col.align-self-right
+									include ../public/js/ptable.js
+							script
+								include ../public/js/ptableToggle.js
+				.col.col-md-auto(style="display: block;")
+					.row
+						h3 Options
+					.row
+						include includes/menubar.pug
+					br
 					.row
 						h3 Precursors
 					.row
-						#menubar
-							include includes/menubar.pug
-					.row
 						include includes/precursorselect.pug
+						script
+							include ../public/js/precursorselect.js
 			br
 			br
 			br
@@ -51,6 +54,8 @@ body
 			br
 			br
 			br
+			.row
+				h3 Results
 			.row
 				.col.align-self-center
 					#results

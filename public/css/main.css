@@ -89,18 +89,18 @@ li a:hover {
 
 input[type='checkbox'] {
     -webkit-appearance:none;
-    width:25px;
-    height:25px;
-    background:white;
+    width:20px;
+    height:20px;
+    background:black;
     border-radius:5px;
     border:2px solid #555;
 }
 
 input[type='checkbox']:checked {
-    background: #abd;
+    background: #fffcfb;
 }
 
 h6 {
     text-align:center;
-    color: white;
+    color: black;
 }
