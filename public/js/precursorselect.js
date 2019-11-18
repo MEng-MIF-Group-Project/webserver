@@ -6,6 +6,3 @@ for (var i = 0; i < precursorslist.children.length; ++i) {
         this.classList.toggle("active");
     });
 }
-
-var l = precursorslist.children;
-console.log(l);
