@@ -4,11 +4,13 @@ $( document ).ready(function() {
 	var input_field = document.getElementById("inputPrimary");
 	var precursorsList = document.getElementById("precursors-list");
 	var pointsCount = document.getElementById("sample-range-value");
+	var margin = document.getElementById("margin-range-value");
 
 	var cache;
 
 	submit_button.addEventListener("click", function(){
 		pointsCount = parseInt(pointsCount.textContent);
+		margin = parseFloat(margin.textContent);
 
 		var activePrecursors = [];
 
@@ -17,6 +19,8 @@ $( document ).ready(function() {
 				activePrecursors.push(precursorsList.children[i]);
 			}
 		}
+
+		var marginPointsString = pointsCount.toString() + "-" + margin.toString();
 
 		if (activePrecursors.length != 0) {
 			var queryPrecursor = "";
@@ -28,10 +32,10 @@ $( document ).ready(function() {
 			console.log(queryPrecursor);
 
 			//console.log(window.location.origin + "/calc/pre");
-			window.location.replace(window.location.origin + "/calc/pre/" + pointsCount + "/" + input_field.value + "/" + queryPrecursor);
+			window.location.replace(window.location.origin + "/calc/pre/" + marginPointsString + "/" + input_field.value + "/" + queryPrecursor);
 		}
 		else {
-			window.location.replace(window.location.origin + "/calc/stoich/" + pointsCount + "/" + input_field.value);
+			window.location.replace(window.location.origin + "/calc/stoich/" + marginPointsString + "/" + input_field.value);
 		}
 		
 		cache=queryPrecursor;

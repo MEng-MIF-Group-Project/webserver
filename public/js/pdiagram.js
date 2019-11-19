@@ -40,8 +40,8 @@ var layout = {
 	{
 		sum: 100,
 		aaxis: makeAxis('A', 0),
-		baxis: makeAxis('<br>B', 45),
-		caxis: makeAxis('<br>C', -45),
+		baxis: makeAxis('<br>B', 0),
+		caxis: makeAxis('<br>C', 0),
 		bgcolor: 'rgba(0,0,0,0)'
 	},
 	paper_bgcolor: 'rgba(0,0,0,0)',

@@ -31,9 +31,21 @@ const VALID_ELEMENTS = [
 
 
 router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
-	// get the list of elements and precursors from the request
+	// get the list of elements, precursors, and runtime data from the request
 	var elements = req.params.elements.split("-");
 	var precursor = req.params.precursor.split("-");
+	var quantityMargin = req.params.quantity.split("-");
+
+	// get the quantity of points from the request
+	var numPoints = parseInt(quantityMargin[0]);
+	if (isNaN(numPoints)) {
+		numPoints = 20;
+	}
+
+	var margin = parseFloat(quantityMargin[1]);
+	if (isNaN(margin)) {
+		margin = 0.003;
+	}
 
 	// build the execution string to be called in EXEC 
 	var execString = './a.out --stoichs=\"';
@@ -74,7 +86,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 	}
 
 	execString = execString.substring(0, execString.length - 1);
-	execString = execString + "\" --margin=0.003 --samples=1000 --mode=1"
+	execString = execString + "\" --margin=" + margin.toString() + " --samples=1000 --mode=1";
 	console.log(execString);
 
 	var collectionToUse = "";
@@ -120,7 +132,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 
 								var dbo = db.db("precursor");
 
-								dbo.collection(collectionToUse).drop();
+								//dbo.collection(collectionToUse).drop();
 
 								dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
 									db.close();
@@ -177,7 +189,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 						var query = {};
 						var sorter = {Score : 1};
 						var filter = {projection:{_id:0, Key:0}};
-						dbo.collection(collectionName).find(query, filter).sort(sorter).limit(100).toArray(function(err, result) {
+						dbo.collection(collectionName).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
 							var pugData = [Object.keys(result[0])];
 
 							Object.keys(result).forEach(function(key) {
@@ -245,11 +257,17 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 router.get('/calc/stoich/:quantity/:elements', function(req, res){
 	// get the list of elements from the request
 	var elements = req.params.elements.split("-");
+	var quantityMargin = req.params.quantity.split("-");
 
 	// get the quantity of points from the request
-	var numPoints = parseInt(req.params.quantity);
+	var numPoints = parseInt(quantityMargin[0]);
 	if (isNaN(numPoints)) {
 		numPoints = 20;
+	}
+
+	var margin = parseFloat(quantityMargin[1]);
+	if (isNaN(margin)) {
+		margin = 0.003;
 	}
 
 	// build the execution string to be called in EXEC 
@@ -263,7 +281,7 @@ router.get('/calc/stoich/:quantity/:elements', function(req, res){
 		execString = execString + elements[elements.length - 1]
 	}
 
-	execString = execString + ' --margin=0.05 --samples=1000 --mode=0'
+	execString = execString + ' --margin=' + margin.toString() + ' --samples=1000 --mode=0'
 	var jobID = uuidv4();
 
 	var collectionToUse = "";
@@ -311,7 +329,7 @@ router.get('/calc/stoich/:quantity/:elements', function(req, res){
 									reject(err)
 
 								var dbo = db.db("stoich");
-								dbo.collection(collectionToUse).drop();
+								//dbo.collection(collectionToUse).drop();
 								dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
 									db.close();
 
