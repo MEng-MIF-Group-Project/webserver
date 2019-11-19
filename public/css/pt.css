@@ -279,6 +279,7 @@ textarea {
 }
 
 [class^="element-"] .chip.long .front .symbol {
+	font-family: 'Helvetica';
 	font-size: .8em !important;
 }
 
