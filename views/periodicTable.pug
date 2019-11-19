@@ -8,7 +8,7 @@ head
 	link(rel="stylesheet" type="text/css" href="/css/pt.css")
 
 	script(src="https://cdn.plot.ly/plotly-latest.min.js")
-	script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
+	script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js")
 	script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous")
 	script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous")
 
@@ -16,6 +16,8 @@ head
 		script(src="/socket.io/socket.io.js")
 		script
 			| var socket = io();
+
+	script(src="/js/searchfield.js")
 body
 	include includes/topbar.pug
 
@@ -59,15 +61,53 @@ body
 			br
 			br
 			br
-			if points
-				script
-					include ../public/js/stoichsconverter.js
+			if stoichs || precursor || xrd
 				.row
-					h3 Results
-				.row
-					.col.align-self-center
-						#results
-							include includes/results.pug
+					.col-2
+						#list-tab.list-group(role='tablist')
+							if stoichs
+								a#list-stoichiometry-list.list-group-item.list-group-item-action.active(data-toggle='list' href='#list-stoichiometry' role='tab' aria-controls='stoichiometry') Stoichiometry
+							else
+								a#list-stoichiometry-list.list-group-item.list-group-item-action.disabled(data-toggle='list' href='#list-stoichiometry' role='tab' aria-controls='stoichiometry') Stoichiometry
+
+							if precursor
+								a#list-precursor-list.list-group-item.list-group-item-action(data-toggle='list' href='#list-precursor' role='tab' aria-controls='precursor') Precursor
+							else
+								a#list-precursor-list.list-group-item.list-group-item-action.disabled(data-toggle='list' href='#list-precursor' role='tab' aria-controls='precursor') Precursor
+
+							if xrd
+								a#list-xrd-list.list-group-item.list-group-item-action(data-toggle='list' href='#list-xrd' role='tab' aria-controls='xrd') XRD
+							else
+								a#list-xrd-list.list-group-item.list-group-item-action.disabled(data-toggle='list' href='#list-xrd' role='tab' aria-controls='xrd') XRD
+					.col-10
+						#nav-tabContent.tab-content
+							if stoichs
+								#list-stoichiometry.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='list-stoichiometry-list') 
+									table.table
+										tr
+											each i in stoichs[0]
+												th=i
+										tbody
+											each i in stoichs[1]
+												tr
+													each col in i
+														td=col
+
+							if precursor
+								#list-precursor.tab-pane.fade(role='tabpanel' aria-labelledby='list-precursor-list')
+									table.table
+										tr
+											each i in precursor[0]
+												th=i
+										tbody
+											each i in precursor[1]
+												tr
+													each col in i
+														td=col
+
+							if xrd 
+								#list-xrd.tab-pane.fade(role='tabpanel' aria-labelledby='list-xrd-list') 3
+
 
 			if diagram
 				.row
