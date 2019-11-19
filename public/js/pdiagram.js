@@ -24,7 +24,11 @@ var trace2 = {
 	text: rawData.map(function(d) { return d.label; }),
 	marker: {
 		symbol: 100,
-		color: '#DB7365',
+		color: rawData.map(function(d) {
+			var value = (1 - (d.label / 255)) * 255;
+			var colour  = new RGBColour(value, value, value, 1);			
+			return colour.getRGB();
+		}),
 		size: 14,
 		line: { width: 2 }
 	},
