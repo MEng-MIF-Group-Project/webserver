@@ -85,33 +85,38 @@ body
 						#nav-tabContent.tab-content
 							if stoichs
 								#list-stoichiometry.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='list-stoichiometry-list') 
-									table.table
-										tr
-											each i in stoichs[0]
-												th=i
-										tbody
-											each i in stoichs[1]
-												tr
-													each col in i
-														td=col
+									.scrollbar.scrollbar-primary.scrollbar-table(style="width: 100%;")
+										table.table
+											tr
+												each i in stoichs[0]
+													th=i
+											tbody
+												each i in stoichs[1]
+													tr
+														each col in i
+															td=col
 
 							if precursor
 								#list-precursor.tab-pane.fade(role='tabpanel' aria-labelledby='list-precursor-list')
-									table.table
-										tr
-											each i in precursor[0]
-												th=i
-										tbody
-											each i in precursor[1]
-												tr
-													each col in i
-														td=col
+									.scrollbar.scrollbar-primary.scrollbar-table(style="width: 100%;")
+										table.table
+											tr
+												each i in precursor[0]
+													th=i
+											tbody
+												each i in precursor[1]
+													tr
+														each col in i
+															td=col
 
 							if xrd 
 								#list-xrd.tab-pane.fade(role='tabpanel' aria-labelledby='list-xrd-list') 3
 
 
 			if diagram
+				script.
+					var rawData = JSON.parse('!{JSON.stringify(diagram)}');
+
 				.row
 					h3 Diagram
 				.row

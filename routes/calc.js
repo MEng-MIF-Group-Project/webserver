@@ -175,7 +175,6 @@ router.get('/calc/pre/:elements/:precursor', function(req, res){
 						var sorter = {Score : 1};
 						var filter = {projection:{_id:0, Key:0}};
 						dbo.collection(collectionName).find(query, filter).sort(sorter).limit(100).toArray(function(err, result) {
-							console.log(result.length);
 							var pugData = [Object.keys(result[0])];
 
 							Object.keys(result).forEach(function(key) {
@@ -188,6 +187,24 @@ router.get('/calc/pre/:elements/:precursor', function(req, res){
 								pugData.push(row);
 							});
 
+							var diagramData = [];
+							console.log("Result length: " + Object.keys(result[0]).length);
+							if (Object.keys(result[0]).length > 3) {
+								Object.keys(result).forEach(function(key) {
+									var row = {};
+
+									row.A = (result[key])[Object.keys(result[key])[0]];
+									row.B = (result[key])[Object.keys(result[key])[1]];
+									row.C = (result[key])[Object.keys(result[key])[2]];
+									row.label = (result[key])[Object.keys(result[key])[Object.keys(result[key]).length - 1]];
+
+									diagramData.push(row);
+								});
+							}
+
+							console.log(diagramData);
+
+							pugParams.diagram = diagramData; 
 							pugParams.precursor = [pugData[0], pugData.slice(1)];
 							pugParams.precursors = [
 								{Name: "Li2S"},
