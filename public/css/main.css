@@ -49,15 +49,15 @@ ul {
 	background-color: #333;
 }
 
-li {
+#topbar li {
 	float: left;
 }
 
-li a {
+#topbar li a {
 	transition: background .2s ease-in;
 }
 
-li a, #logo {
+#topbar li a, #logo {
 	display: block;
 	color: #fffcfb;
 	text-align: center;
