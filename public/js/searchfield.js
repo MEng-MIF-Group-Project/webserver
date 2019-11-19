@@ -3,10 +3,13 @@ $( document ).ready(function() {
 	var submit_button = document.getElementById("submitSearch");
 	var input_field = document.getElementById("inputPrimary");
 	var precursorsList = document.getElementById("precursors-list");
+	var pointsCount = document.getElementById("sample-range-value");
 
 	var cache;
 
 	submit_button.addEventListener("click", function(){
+		pointsCount = parseInt(pointsCount.textContent);
+
 		var activePrecursors = [];
 
 		for (var i = 0; i < precursorsList.children.length; i++) {
@@ -25,10 +28,10 @@ $( document ).ready(function() {
 			console.log(queryPrecursor);
 
 			//console.log(window.location.origin + "/calc/pre");
-			window.location.replace(window.location.origin + "/calc/pre/" + input_field.value + "/" + queryPrecursor);
+			window.location.replace(window.location.origin + "/calc/pre/" + pointsCount + "/" + input_field.value + "/" + queryPrecursor);
 		}
 		else {
-			window.location.replace(window.location.origin + "/calc/stoich/" + input_field.value);
+			window.location.replace(window.location.origin + "/calc/stoich/" + pointsCount + "/" + input_field.value);
 		}
 		
 		cache=queryPrecursor;
