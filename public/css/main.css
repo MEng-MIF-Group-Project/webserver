@@ -238,4 +238,5 @@ border-radius: 10px; }
 
 .list-group-item.active {
 	background: #2BBBAD;
+	border-color: #2BBBAD !important;
 }
