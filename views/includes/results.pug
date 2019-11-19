@@ -30,23 +30,29 @@ mixin tabs(tabsItems)
     { title: 'Stoichiometry'} ,
     { title: 'XRD' }];
 
-+tabs(data)
-    //-var points=!{points}
-    script.
-        var arr = [!{points}]
-        toFormulae(arr, !{points[0].length})
-        
+-var head = []
+-var tail = []
 
+script.
+    var arr = !{JSON.stringify(points)}
+    head = arr[0]
+    tail = []
+    for (var i=1;i<arr.length;++i) {
+        tail.push(arr[i])
+    }
+        
+-var cols = []
+-var rows = []
+
++tabs(data)
     each tab, index in data
-        +tab(index)        
-            -var cols = []
-            -var rows = []
+        +tab(index)
             if this.title === "Precursors"
                 -cols = ['Id', 'Formula', 'Li2S', 'Al2S3', 'Al2O3', 'LiAlO2', 'Li2O']
                 -rows = [['00', 'LiAlSO', '0', '0.333', '0', '0.333', '0.333'], ['01', 'Li5AlS2O2', '0.5', '0.5', '0', '0', '2'], ['02', 'Li4Al2S3O2', '0', '1', '0', '0', '2'], ['03', 'Li3Al9S13O2', '0', '4.333', '0', '0.333', '1.333']]
             else if this.title === "Stoichiometry"
-                -cols = ['Id', 'Formula', 'Mass (g/mol)']
-                -rows = [['00', 'LiAlSO', '0'], ['01', 'Li5AlS2O2', '0.6']]
+                -cols = ['Id', 'Field0', 'Field1']
+                -rows = [['00', 'nil', 'nil'], ['01', 'nil', 'nil']]
             else if this.title === "XRD"
                 -cols = ['Id', 'Field0', 'Field1']
                 -rows = [['00', 'nil', 'nil'], ['01', 'nil', 'nil']]
