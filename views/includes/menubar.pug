@@ -25,3 +25,13 @@ div(style="max-width: 180px")
                     h6 Option3
                 .col.self-align-right
                     input(type="text", name="MenuBarText1", style="width: 100%")
+        .list-group-item
+            .row
+                .col
+                    h6 Samples
+            .row
+                .col(style="width: 100%;")
+                    input(type="range", min="1", max="100", value="20", class="slider", id="sample-range")
+                    p
+                        | Value: 
+                        span#sample-range-value 20

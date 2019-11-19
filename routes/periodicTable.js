@@ -13,7 +13,8 @@ router.get('/', function(req,res){
 			{Name: "Li2O"},
 			{Name: "SnS2"},
 			{Name: "LiCl"}
-		]
+		],
+		diagram: []
 	});
 });
 

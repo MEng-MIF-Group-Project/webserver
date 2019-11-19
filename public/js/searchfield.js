@@ -4,6 +4,8 @@ $( document ).ready(function() {
 	var input_field = document.getElementById("inputPrimary");
 	var precursorsList = document.getElementById("precursors-list");
 
+	var cache;
+
 	submit_button.addEventListener("click", function(){
 		var activePrecursors = [];
 
@@ -28,5 +30,8 @@ $( document ).ready(function() {
 		else {
 			window.location.replace(window.location.origin + "/calc/stoich/" + input_field.value);
 		}
+		
+		cache=queryPrecursor;
+		input_field.textContent = cache;
 	});
 });
