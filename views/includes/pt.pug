@@ -1,12 +1,19 @@
 -var cz=1
 mixin ele(name)
     if (name != "")
+        if name === "La"
+            -cz=57
+        else if name === "Ac"
+            -cz=89
+        else if name === "Hf"
+            -cz=72
+        else if name === "Rf"
+            -cz=104
         .element-non-metal
             .chip
                 .face.front
                     i.hidden-phone=cz++
                     strong.symbol=name
-
     else
         .element-blank
 
