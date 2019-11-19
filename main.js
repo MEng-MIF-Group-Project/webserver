@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 
 const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser')
@@ -18,6 +20,13 @@ app.use(express.static('public'));
 
 // set pug as the html templater
 app.set('view engine', 'pug');
+
+// MUST BE FIRST
+// allow socketio to be accessable in the sub routers by putting it in the req
+app.use(function(req,res,next){
+    req.io = io;
+    next();
+});
 
 // auth router
 app.get('/', function(req, res, next) {
@@ -59,5 +68,12 @@ app.use(function(req, res) {
     res.render("error", {text:"404 Page Not Found"});
 });
 
+// socketio listen
+io.on('connection', function(socket){
+  console.log('a user connected');
+});
+
 // Open the server on port 3000
-app.listen(3000);
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});
