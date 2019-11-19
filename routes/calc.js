@@ -30,7 +30,7 @@ const VALID_ELEMENTS = [
 ]
 
 
-router.get('/calc/pre/:elements/:precursor', function(req, res){
+router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 	// get the list of elements and precursors from the request
 	var elements = req.params.elements.split("-");
 	var precursor = req.params.precursor.split("-");
@@ -119,6 +119,9 @@ router.get('/calc/pre/:elements/:precursor', function(req, res){
 									reject(err)
 
 								var dbo = db.db("precursor");
+
+								dbo.collection(collectionToUse).drop();
+
 								dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
 									db.close();
 
@@ -187,21 +190,28 @@ router.get('/calc/pre/:elements/:precursor', function(req, res){
 								pugData.push(row);
 							});
 
-							var diagramData = [];
+							var diagramData = {};
+							diagramData.data = [];
+							var largestScore = 0;
 							console.log("Result length: " + Object.keys(result[0]).length);
 							if (Object.keys(result[0]).length > 3) {
 								Object.keys(result).forEach(function(key) {
-									var row = {};
+									var row = {}; 
 
 									row.A = (result[key])[Object.keys(result[key])[0]];
 									row.B = (result[key])[Object.keys(result[key])[1]];
 									row.C = (result[key])[Object.keys(result[key])[2]];
 									row.label = (result[key])[Object.keys(result[key])[Object.keys(result[key]).length - 1]];
 
-									diagramData.push(row);
+									if (row.label > largestScore) {
+										largestScore = row.label
+									}
+
+									diagramData.data.push(row);
 								});
 							}
 
+							diagramData.largestScore = largestScore;
 							console.log(diagramData);
 
 							pugParams.diagram = diagramData; 
@@ -232,9 +242,15 @@ router.get('/calc/pre/:elements/:precursor', function(req, res){
 	});
 });
 
-router.get('/calc/stoich/:elements', function(req, res){
+router.get('/calc/stoich/:quantity/:elements', function(req, res){
 	// get the list of elements from the request
 	var elements = req.params.elements.split("-");
+
+	// get the quantity of points from the request
+	var numPoints = parseInt(req.params.quantity);
+	if (isNaN(numPoints)) {
+		numPoints = 20;
+	}
 
 	// build the execution string to be called in EXEC 
 	var execString = './a.out --stoichs=';
@@ -295,6 +311,7 @@ router.get('/calc/stoich/:elements', function(req, res){
 									reject(err)
 
 								var dbo = db.db("stoich");
+								dbo.collection(collectionToUse).drop();
 								dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
 									db.close();
 
@@ -327,7 +344,7 @@ router.get('/calc/stoich/:elements', function(req, res){
 			var query = {};
 			var sorter = {Score : 1};
 			var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
-			dbo.collection(collectionToUse).find(query, filter).sort(sorter).limit(50).toArray(function(err, result) {
+			dbo.collection(collectionToUse).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
 				console.log(result.length);
 				if (result.length != 0) {
 					var pugData = [Object.keys(result[0])];

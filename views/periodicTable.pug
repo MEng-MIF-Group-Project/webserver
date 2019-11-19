@@ -116,7 +116,8 @@ body
 
 			if diagram
 				script.
-					var rawData = JSON.parse('!{JSON.stringify(diagram)}');
+					var rawData = JSON.parse('!{JSON.stringify(diagram)}').data;
+					var largestScore = JSON.parse('!{JSON.stringify(diagram)}').largestScore;
 
 				.row
 					h3 Diagram

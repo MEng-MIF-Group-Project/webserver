@@ -5,7 +5,7 @@ var trace1 = {
 	//a: rawData.map(function(d) { return d.A; }),
 	//b: rawData.map(function(d) { return d.B; }),
 	//c: rawData.map(function(d) { return d.C; }),
-	text: rawData.map(function(d) { return d.label; }),
+	//text: rawData.map(function(d) { return d.label; }),
 	marker: {
 		symbol: 100,
 		color: '#DB7365',
@@ -25,8 +25,8 @@ var trace2 = {
 	marker: {
 		symbol: 100,
 		color: rawData.map(function(d) {
-			var value = (1 - (d.label / 255)) * 255;
-			var colour  = new RGBColour(value, value, value, 1);			
+			var value = 1 - (d.label / largestScore);
+			var colour  = new RGBColour(0, 0, 0, value);
 			return colour.getRGB();
 		}),
 		size: 14,
