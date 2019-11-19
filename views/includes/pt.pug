@@ -9,11 +9,67 @@ mixin ele(name)
             -cz=72
         else if name === "Rf"
             -cz=104
-        .element-non-metal
-            .chip
-                .face.front
-                    i.hidden-phone=cz++
-                    strong.symbol=name
+            
+        if (cz === 1 || (cz >= 6 && cz <= 8) || cz === 15 || cz === 16 || cz === 34) 
+            .element-non-metal
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if (cz === 2 || cz === 10 || cz === 18 || cz === 36 || cz === 54 || cz === 86)
+            .element-noble-gas
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if (cz === 3 || cz === 11 || cz === 19 || cz === 37 || cz === 55 || cz === 87) 
+            .element-alkali-metal
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if (cz === 4 || cz === 12 || cz === 20 || cz === 38 || cz === 56 || cz === 88)
+            .element-alkali-earth-metal
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if ((cz >= 21 && cz <= 29) || (cz >= 39 && cz <= 47) || (cz >= 72 && cz <= 79) || (cz >= 104 && cz <= 111))
+            .element-transition-metal
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if (cz === 5 || cz === 14 || cz === 32 || cz === 33 || cz === 51 || cz === 52 || cz === 83 || cz === 84)
+            .element-metalloid
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if (cz === 9 || cz === 17 || cz === 35 || cz === 53 || cz === 85)
+            .element-halogen
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if (cz === 30 || cz === 48 || cz === 80 || cz === 13 || cz === 31 || cz === 49 || cz === 50 || cz === 81 || cz === 82 || cz === 112)
+            .element-actinoid-transitional-metal
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if (cz >= 57 && cz <= 71)
+            .element-lanthoid
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
+        else if (cz >= 89 && cz <= 103)
+            .element-actinoid
+                .chip
+                    .face.front
+                        i.hidden-phone=cz++
+                        strong.symbol=name
     else
         .element-blank
 
@@ -31,8 +87,8 @@ mixin row(element1, ...elements)
         +row("Na","Mg","","","","","","","","","","","Al","Si","P","S","Cl","Ar")
         +row("K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr")
         +row("Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe")
-        +row("Cs", "Ba", "La", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn")
-        +row("Fr", "Ra", "Ac", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og")
+        +row("Cs", "Ba", "", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn")
+        +row("Fr", "Ra", "", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og")
         +row("","","","","","","","","","","","","","","","","","")
         +row("", "", "", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu")
         +row("", "", "", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr")
