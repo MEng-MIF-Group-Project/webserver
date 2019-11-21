@@ -97,7 +97,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 			cwd: exeDir
 		}, function(error, stdout, stderr) {
 			if (error)
-				reject(err);
+				reject(error);
 
 			// Maybe put this in a log file instead of cluttering the console
 			console.log(stdout.toString());
@@ -158,8 +158,8 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 
 	var pugParams = {};
 
-	execPromise.then(function(result) {
-		var collectionName = result;
+	execPromise.then(function(resultPromise) {
+		var collectionName = resultPromise;
 		console.log(jobID + " FINISHED " + collectionName);
 
 		// Connect to DB and extract points with good scores, sorted by score
@@ -295,7 +295,7 @@ router.get('/calc/stoich/:quantity/:elements', function(req, res){
 			cwd: exeDir
 		}, function(error, stdout, stderr) {
 			if (error)
-				reject(err);
+				reject(error);
 
 			// Maybe put this in a log file instead of cluttering the console
 			console.log(stdout.toString());
@@ -362,8 +362,12 @@ router.get('/calc/stoich/:quantity/:elements', function(req, res){
 			var query = {};
 			var sorter = {Score : 1};
 			var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+
+			if (err)
+				console.log(err);
+
 			dbo.collection(collectionToUse).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
-				console.log(result.length);
+				console.log("RESULT LEN " + result.length);
 				if (result.length != 0) {
 					var pugData = [Object.keys(result[0])];
 
@@ -388,7 +392,7 @@ router.get('/calc/stoich/:quantity/:elements', function(req, res){
 						{Name: "SnS2"},
 						{Name: "LiCl"}
 					]
-					console.log(pugData);
+					//console.log(pugData);
 
 					res.render("periodicTable", pugParams);
 				}
