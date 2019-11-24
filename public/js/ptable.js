@@ -13,19 +13,16 @@ for (var i = 0; i < chips.length; ++i) {
 		} else {
 			var value_string = String(input_field.value);
 			var old_string = String(this.firstChild.lastChild.textContent);
-		
-			if (value_string.startsWith(old_string)) {
-				
+            
+            if (value_string == old_string){
+                value_string = "";
+            } else if (value_string.startsWith(old_string + "-")) {
+                value_string = value_string.replace(old_string + "-", "");
+			} else if (value_string.endsWith("-" + old_string)) {
+				value_string = value_string.replace("-" + old_string, "");
 			} else {
-				old_string = "-" + old_string;
-			}
-			value_string = value_string.replace(old_string, "");
-
-
-			if (value_string.startsWith("-")) {
-				value_string = value_string.replace("-", "");
-			}
-
+                value_string = value_string.replace("-" + old_string + "-", "");
+            }
 			input_field.value = value_string;
 		} 
 	});
