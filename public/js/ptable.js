@@ -19,9 +19,10 @@ for (var i = 0; i < chips.length; ++i) {
             } else if (value_string.startsWith(old_string + "-")) {
                 value_string = value_string.replace(old_string + "-", "");
 			} else if (value_string.endsWith("-" + old_string)) {
-				value_string = value_string.replace("-" + old_string, "");
+                value_string = value_string + "@egaega@@rwssh@@";
+				value_string = value_string.replace("-" + old_string + "@egaega@@rwssh@@", "");
 			} else {
-                value_string = value_string.replace("-" + old_string + "-", "");
+                value_string = value_string.replace("-" + old_string + "-", "-");
             }
 			input_field.value = value_string;
 		} 
