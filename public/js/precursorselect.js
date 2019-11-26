@@ -18,9 +18,9 @@ precursorbutton.addEventListener("click", function() {
     temp.id = precursorslist.children.length+1;
     temp.textContent = precursortxtfield.value;
 
-    document.getElementById("precursors-list").appendChild(temp);
+    document.getElementById("precursors-list").firstChild.before(temp);
 
-    precursorslist.lastChild.addEventListener("click", function() {
+    precursorslist.firstChild.addEventListener("click", function() {
         this.classList.toggle("active");
     });
 

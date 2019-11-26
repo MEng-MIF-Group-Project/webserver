@@ -44,8 +44,9 @@ body
 								include ../public/js/ptableToggle.js
 				.col.col-md-auto(style="display: block;")
 					.row
-						h3 Options
-					.row
+						h3 Options 
+						input(style="margin: 6px;" type='checkbox' name='Op' checked)#options_toggle
+					.row#options_menu(style="display: none;")
 						include includes/menubar.pug
 						script
 							include ../public/js/menubar.js
