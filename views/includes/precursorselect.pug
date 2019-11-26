@@ -4,13 +4,13 @@ div(style="max-width: 180px;")
         input(type="text", class="form-control", placeholder="", style="")
         .input-group-append
             button.btn#precursor-add-bttn(type="button") Add
-        
-    .scrollbar.scrollbar-primary#precursor-scroll(style="height: 510px;")
+
+    .scrollbar.scrollbar-primary(style="max-height: 275px;")
         //.force-overflow
         .list-group#precursors-list(style="min-width: 180px;")
             each prec in precursors
                 //.row
-                button(type="button").list-group-item.list-group-item-action(id=n++)=prec.Name
+                button.list-group-item.list-group-item-action(type="button")=prec.Name
                     //h5 #{prec}
                     //input(
                     //    type='checkbox'

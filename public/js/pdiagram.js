@@ -25,7 +25,7 @@ var trace2 = {
 	marker: {
 		symbol: 100,
 		color: rawData.map(function(d) {
-			var value = 1 - (d.label / largestScore);
+			var value = (1 - (d.label / largestScore)) + 0.05;
 			var colour  = new RGBColour(0, 0, 0, value);
 			return colour.getRGB();
 		}),
@@ -36,7 +36,7 @@ var trace2 = {
 
 var data = [trace1, trace2];
 var layout = {
-	ternary: 
+	ternary:
 	{
 		sum: 100,
 		aaxis: makeAxis('A', 0),
