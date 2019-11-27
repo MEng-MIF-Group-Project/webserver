@@ -64,7 +64,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 	orderedElements = new Array(112).fill(null);
 	for (var i = 0; i < (elements.length); i++) {
 		var eleIndex = VALID_ELEMENTS.indexOf(elements[i].replace(/[0-9]/g,''));
-		orderedElements.splice(eleIndex,0,elements[i]);
+		orderedElements.splice(eleIndex,1,elements[i]);
 	}
 	var elements = orderedElements.filter(function (el) {
 		return el != null;
@@ -100,155 +100,202 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 				reject(error);
 
 			// Maybe put this in a log file instead of cluttering the console
-			// console.log(stdout.toString());
+			console.log(stdout.toString());
+			if (stdout.toString().includes("No solutions")) {
+				resolve(-1);
+			}
+			else {
+				// Grab the CSV created with a regex like expression
+				glob(path.join(exeDir, "*.csv"), {}, (err, files) => {
+					if (err)
+						reject(err);
 
-			// Grab the CSV created with a regex like expression
-			glob(path.join(exeDir, "*.csv"), {}, (err, files) => {
-				if (err)
-					reject(err);
+					for (var file in files) {
+						// Check the first char matches the mode of the calc, and extract the database table name from it
+						var fileName =  path.basename(files[file], path.extname(files[file]));
+						var firstChar = fileName.charAt(0);
+						collectionToUse = fileName.substring(1,999);
 
-				for (var file in files) {
-					// Check the first char matches the mode of the calc, and extract the database table name from it
-					var fileName =  path.basename(files[file], path.extname(files[file]));
-					var firstChar = fileName.charAt(0);
-					collectionToUse = fileName.substring(1,999);
-
-					if (firstChar == '1') {
-						// CSV to JSON
-						csv().fromFile(files[file]).then((jsonObj)=>{
-							console.log("DEPTH OF JSON DATA: " + getDepth(jsonObj));
-							// Convert all numberic strings to their float equiv so the DB gets the right datatype
-							Object.keys(jsonObj).forEach(function(key) {
-								Object.keys(jsonObj[key]).forEach(function(subKey) {
-									if (subKey != "Key" && subKey != "Name") {
-										(jsonObj[key])[subKey] = parseFloat((jsonObj[key])[subKey]);
-									}
+						if (firstChar == '1') {
+							// CSV to JSON
+							csv().fromFile(files[file]).then((jsonObj)=>{
+								console.log("DEPTH OF JSON DATA: " + getDepth(jsonObj));
+								// Convert all numberic strings to their float equiv so the DB gets the right datatype
+								Object.keys(jsonObj).forEach(function(key) {
+									Object.keys(jsonObj[key]).forEach(function(subKey) {
+										if (subKey != "Key" && subKey != "Name") {
+											(jsonObj[key])[subKey] = parseFloat((jsonObj[key])[subKey]);
+										}
+									});
 								});
-							});
 
-							// Connect to DB and insert new points
-							MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-								if (err)
-									reject(err)
+								// Connect to DB and insert new points
+								MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+									if (err)
+										reject(err)
 
-								var dbo = db.db("precursor");
+									var dbo = db.db("precursor");
 
-								//dbo.collection(collectionToUse).drop();
+									//dbo.collection(collectionToUse).drop();
 
-								dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
-									db.close();
+									dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
+										db.close();
 
-									// Delete file now its been used
-									fs.unlink(files[file], function (err) {
-										if (err)
-											reject(err);
-										// if no error, file has been deleted successfully
-										console.log('File deleted');
+										// Delete file now its been used
+										fs.unlink(files[file], function (err) {
+											if (err)
+												reject(err);
+											// if no error, file has been deleted successfully
+											console.log('File deleted');
 
-										// release promise so the program can continue
-										resolve(collectionToUse);
+											// release promise so the program can continue
+											resolve(collectionToUse);
+										});
 									});
 								});
 							});
-						});
+						}
 					}
-				}
-			});
+				});
+			}
 		});
 	});
 
 	var pugParams = {};
-
 	execPromise.then(function(resultPromise) {
-		var collectionName = resultPromise;
-		console.log(jobID + " FINISHED " + collectionName);
+		if (resultPromise == -1) {
+			console.log("NO SOLUTIONS FOUND");
+			MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+				var dbo = db.db("stoich");
+				var query = {};
+				var sorter = {Score : 1};
+				var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+				dbo.collection(elementList).find(query, filter).sort(sorter).limit(50).toArray(function(err, result) {
+					pugParams.stoichs = []
 
-		// Connect to DB and extract points with good scores, sorted by score
-		MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
-			var dbo = db.db("stoich");
-			var query = {};
-			var sorter = {Score : 1};
-			var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
-			dbo.collection(collectionName).find(query, filter).sort(sorter).limit(50).toArray(function(err, result) {
-				if (result.length != 0) {
-					var pugData = [Object.keys(result[0])];
+					if (result.length != 0) {
+						var pugData = [Object.keys(result[0])];
 
-					Object.keys(result).forEach(function(key) {
-						var row = [];
+						Object.keys(result).forEach(function(key) {
+							var row = [];
 
-						Object.keys(result[key]).forEach(function(subKey) {
-							row.push((result[key])[subKey]);
-						});
-
-						pugData.push(row);
-					});
-
-					pugParams.stoichs = [pugData[0], pugData.slice(1)];
-
-					MongoClient.connect(url, { useUnifiedTopology: true }, function(err2, db2) {
-						var dbo = db2.db("precursor");
-						var query = {};
-						var sorter = {Score : 1};
-						var filter = {projection:{_id:0, Key:0}};
-						dbo.collection(collectionName).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
-							var pugData = [Object.keys(result[0])];
-
-							Object.keys(result).forEach(function(key) {
-								var row = [];
-
-								Object.keys(result[key]).forEach(function(subKey) {
-									row.push((result[key])[subKey]);
-								});
-
-								pugData.push(row);
+							Object.keys(result[key]).forEach(function(subKey) {
+								row.push((result[key])[subKey]);
 							});
 
-							var diagramData = {};
-							diagramData.data = [];
-							var largestScore = 0;
-							console.log("Result length: " + Object.keys(result[0]).length);
-							if (Object.keys(result[0]).length > 3) {
-								Object.keys(result).forEach(function(key) {
-									var row = {};
-
-									row.A = (result[key])[Object.keys(result[key])[0]];
-									row.B = (result[key])[Object.keys(result[key])[1]];
-									row.C = (result[key])[Object.keys(result[key])[2]];
-									row.label = (result[key])[Object.keys(result[key])[Object.keys(result[key]).length - 1]];
-
-									if (row.label > largestScore) {
-										largestScore = row.label
-									}
-
-									diagramData.data.push(row);
-								});
-							}
-
-							diagramData.largestScore = largestScore;
-							//console.log(diagramData);
-
-							pugParams.diagram = diagramData;
-							pugParams.precursor = [pugData[0], pugData.slice(1)];
-							pugParams.precursors = [
-								{Name: "Li2S"},
-								{Name: "Al2S3"},
-								{Name: "Al2O3"},
-								{Name: "LiAlO2"},
-								{Name: "Li2O"},
-								{Name: "SnS2"},
-								{Name: "LiCl"}
-							]
-							//console.log(pugParams);
-							res.render("periodicTable", pugParams);
+							pugData.push(row);
 						});
-					});
-				}
-				else {
-					res.render("error", {text: "No Data For " + req.params.elements});
-				}
-				db.close();
+
+						pugParams.stoichs = [pugData[0], pugData.slice(1)];
+					}
+
+					pugParams.precursor = [];
+					pugParams.precursors = [
+						{Name: "Li2S"},
+						{Name: "Al2S3"},
+						{Name: "Al2O3"},
+						{Name: "LiAlO2"},
+						{Name: "Li2O"},
+						{Name: "SnS2"},
+						{Name: "LiCl"}
+					]
+
+					//console.log(pugParams);
+					res.render("periodicTable", pugParams);
+				});
 			});
-		});
+		}
+		else {
+			var collectionName = resultPromise;
+			console.log(jobID + " FINISHED " + collectionName);
+
+			// Connect to DB and extract points with good scores, sorted by score
+			MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+				var dbo = db.db("stoich");
+				var query = {};
+				var sorter = {Score : 1};
+				var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+				dbo.collection(collectionName).find(query, filter).sort(sorter).limit(50).toArray(function(err, result) {
+					if (result.length != 0) {
+						var pugData = [Object.keys(result[0])];
+
+						Object.keys(result).forEach(function(key) {
+							var row = [];
+
+							Object.keys(result[key]).forEach(function(subKey) {
+								row.push((result[key])[subKey]);
+							});
+
+							pugData.push(row);
+						});
+
+						pugParams.stoichs = [pugData[0], pugData.slice(1)];
+
+						MongoClient.connect(url, { useUnifiedTopology: true }, function(err2, db2) {
+							var dbo = db2.db("precursor");
+							var query = {};
+							var sorter = {Score : 1};
+							var filter = {projection:{_id:0, Key:0}};
+							dbo.collection(collectionName).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
+								var pugData = [Object.keys(result[0])];
+
+								Object.keys(result).forEach(function(key) {
+									var row = [];
+
+									Object.keys(result[key]).forEach(function(subKey) {
+										row.push((result[key])[subKey]);
+									});
+
+									pugData.push(row);
+								});
+
+								var diagramData = {};
+								diagramData.data = [];
+								var largestScore = 0;
+								console.log("Result length: " + Object.keys(result[0]).length);
+								if (Object.keys(result[0]).length > 3) {
+									Object.keys(result).forEach(function(key) {
+										var row = {};
+
+										row.A = (result[key])[Object.keys(result[key])[0]];
+										row.B = (result[key])[Object.keys(result[key])[1]];
+										row.C = (result[key])[Object.keys(result[key])[2]];
+										row.label = (result[key])[Object.keys(result[key])[Object.keys(result[key]).length - 1]];
+
+										if (row.label > largestScore) {
+											largestScore = row.label
+										}
+
+										diagramData.data.push(row);
+									});
+								}
+
+								diagramData.largestScore = largestScore;
+								//console.log(diagramData);
+
+								pugParams.diagram = diagramData;
+								pugParams.precursor = [pugData[0], pugData.slice(1)];
+								pugParams.precursors = [
+									{Name: "Li2S"},
+									{Name: "Al2S3"},
+									{Name: "Al2O3"},
+									{Name: "LiAlO2"},
+									{Name: "Li2O"},
+									{Name: "SnS2"},
+									{Name: "LiCl"}
+								]
+								//console.log(pugParams);
+								res.render("periodicTable", pugParams);
+							});
+						});
+					}
+					else {
+						res.render("error", {text: "Database Selection Failed For " + elementList});
+					}
+					db.close();
+				});
+			});
+		}
 	}, function(err) {
 		console.log(err);
 		res.render("error", {text: "Calculator failed to run, please wait and try again."})
@@ -275,7 +322,7 @@ router.get('/calc/stoich/:quantity/:elements', function(req, res){
 	orderedElements = new Array(112).fill(null);
 	for (var i = 0; i < (elements.length); i++) {
 		var eleIndex = VALID_ELEMENTS.indexOf(elements[i].replace(/[0-9]/g,''));
-		orderedElements.splice(eleIndex,0,elements[i]);
+		orderedElements.splice(eleIndex,1,elements[i]);
 	}
 	var elements = orderedElements.filter(function (el) {
 		return el != null;

@@ -44,7 +44,7 @@ body
 								include ../public/js/ptableToggle.js
 				.col.col-md-auto(style="display: block;")
 					.row
-						h3 Options 
+						h3 Options
 						input(style="margin: 6px;" type='checkbox' name='Op' checked)#options_toggle
 					.row#options_menu(style="display: none;")
 						include includes/menubar.pug
@@ -59,6 +59,7 @@ body
 							script
 								include ../public/js/precursorselect.js
 			if stoichs || precursor || xrd
+				br.mt-5.mb-4
 				.row.mt-5
 					.col-2
 						#list-tab.list-group(role='tablist')
@@ -79,32 +80,40 @@ body
 					.col-10
 						#nav-tabContent.tab-content
 							if stoichs
-								#list-stoichiometry.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='list-stoichiometry-list') 
-									.scrollbar.scrollbar-primary.scrollbar-table(style="width: 100%;")
-										table.table
-											tr
-												each i in stoichs[0]
-													th=i
-											tbody
-												each i in stoichs[1]
-													tr
-														each col in i
-															td=col
+								if stoichs.length > 0
+									#list-stoichiometry.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='list-stoichiometry-list')
+										.scrollbar.scrollbar-primary.scrollbar-table(style="width: 100%;")
+											table.table
+												tr
+													each i in stoichs[0]
+														th=i
+												tbody
+													each i in stoichs[1]
+														tr
+															each col in i
+																td=col
+							else
+								#list-stoichiometry.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='list-stoichiometry-list')
+									h3 No Data
 
 							if precursor
-								#list-precursor.tab-pane.fade(role='tabpanel' aria-labelledby='list-precursor-list')
-									.scrollbar.scrollbar-primary.scrollbar-table(style="width: 100%;")
-										table.table
-											tr
-												each i in precursor[0]
-													th=i
-											tbody
-												each i in precursor[1]
-													tr
-														each col in i
-															td=col
+								if precursor.length > 0
+									#list-precursor.tab-pane.fade(role='tabpanel' aria-labelledby='list-precursor-list')
+										.scrollbar.scrollbar-primary.scrollbar-table(style="width: 100%;")
+											table.table
+												tr
+													each i in precursor[0]
+														th=i
+												tbody
+													each i in precursor[1]
+														tr
+															each col in i
+																td=col
+								else
+									#list-precursor.tab-pane.fade(role='tabpanel' aria-labelledby='list-precursor-list')
+										h3 No Data
 
-							if xrd 
+							if xrd
 								#list-xrd.tab-pane.fade(role='tabpanel' aria-labelledby='list-xrd-list') 3
 
 
