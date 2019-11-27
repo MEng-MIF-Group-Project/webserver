@@ -27,5 +27,33 @@ for (var i = 0; i < chips.length; ++i) {
 			input_field.value = value_string;
 		} 
 	});
+    
 }
+
+input_field.addEventListener("input", function(){
+    var s = String(input_field.value).toLowerCase();
+    var ar = [];
+    var cur = "";
+    var count = 0;
+    for (var i = 0; i < s.length; i++){
+        if (s.charAt(i) != "-"){
+            cur = cur + s.charAt(i);
+        }
+        if (s.charAt(i) == "-" || i + 1 == s.length){
+            ar[count] = cur.toLowerCase();
+            count += 1;
+            cur = "";
+        }
+    }
+    
+    for (var i = 0; i < chips.length; i++){
+        chips[i].firstChild.classList.toggle("active", false);
+        for (var j = 0; j < count; j++){
+            if (ar[j] == String(chips[i].firstChild.lastChild.textContent).toLowerCase()){
+                chips[i].firstChild.classList.toggle("active", true);
+            }
+        }
+    }
+    });
+    
  
