@@ -4,13 +4,15 @@ $( document ).ready(function() {
 	var input_field = document.getElementById("inputPrimary");
 	var precursorsList = document.getElementById("precursors-list");
 	var pointsCount = document.getElementById("sample-range-value");
-	var margin = document.getElementById("margin-range-value");
+
+	var propCheckBox = document.getElementById("prop_cbeckbox");
+	var massCheckBox = document.getElementById("mass_checkbox");
+
 
 	var cache;
-
 	submit_button.addEventListener("click", function(){
 		pointsCount = parseInt(pointsCount.textContent);
-		margin = parseFloat(margin.textContent);
+		var propMassString = (!propCheckBox.checked).toString() + "-" + (!massCheckBox.checked).toString()
 
 		var activePrecursors = [];
 
@@ -20,7 +22,7 @@ $( document ).ready(function() {
 			}
 		}
 
-		var marginPointsString = pointsCount.toString() + "-" + margin.toString();
+		var pointsString = pointsCount.toString()
 
 		if (activePrecursors.length != 0) {
 			var queryPrecursor = "";
@@ -32,12 +34,12 @@ $( document ).ready(function() {
 			console.log(queryPrecursor);
 
 			//console.log(window.location.origin + "/calc/pre");
-			window.location.replace(window.location.origin + "/calc/pre/" + marginPointsString + "/" + input_field.value + "/" + queryPrecursor);
+			window.location.replace(window.location.origin + "/calc/pre/" + pointsString + "/" + input_field.value + "/" + queryPrecursor + "/" + propMassString);
 		}
 		else {
-			window.location.replace(window.location.origin + "/calc/stoich/" + marginPointsString + "/" + input_field.value);
+			window.location.replace(window.location.origin + "/calc/stoich/" + pointsString + "/" + input_field.value + "/" + propMassString);
 		}
-		
+
 		cache=queryPrecursor;
 		input_field.textContent = cache;
 	});

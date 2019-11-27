@@ -14,18 +14,9 @@ div(style="max-width: 180px")
                     h6.text-left Mass
                 .col.text-right
                     input#mass_checkbox(type='checkbox' name='Op2' checked)
-            
-        
+
+
         .list-group-item
-            .row
-                .col
-                    h6.font-weight-bold Margin
-            .row
-                .col(style="width: 100%;")
-                    input(type="range", min="0.001", max="0.1", value="0.04", step="0.001", class="slider", id="margin-range")
-                    p
-                        | Value: 
-                        span#margin-range-value 0.04
             .row
                 .col
                     h6.font-weight-bold Samples
@@ -33,7 +24,7 @@ div(style="max-width: 180px")
                 .col(style="width: 100%;")
                     input(type="range", min="1", max="100", value="20", class="slider", id="sample-range")
                     p
-                        | Value: 
+                        | Value:
                         span#sample-range-value 20
     //.list-group(style="min-width: 180px; margin-left: 10px;")
         .list-group-item
@@ -42,4 +33,3 @@ div(style="max-width: 180px")
                     h6 Option3
                 .col.self-align-right
                     input(type="text", name="MenuBarText1", style="width: 100%")
-        

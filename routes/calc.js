@@ -43,22 +43,19 @@ function getDepth(obj) {
 	return 1 + depth
 }
 
-router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
+router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, res){
 	// get the list of elements, precursors, and runtime data from the request
 	var elements = req.params.elements.split("-");
 	var precursor = req.params.precursor.split("-");
-	var quantityMargin = req.params.quantity.split("-");
+	var propMass = req.params.propMass.split("-");
 
 	// get the quantity of points from the request
-	var numPoints = parseInt(quantityMargin[0]);
+	var numPoints = parseInt(req.params.quantity);
 	if (isNaN(numPoints)) {
 		numPoints = 20;
 	}
 
-	var margin = parseFloat(quantityMargin[1]);
-	if (isNaN(margin)) {
-		margin = 0.003;
-	}
+	var margin = 0.003;
 
 	// Order Elements for consistency
 	orderedElements = new Array(112).fill(null);
@@ -169,7 +166,12 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 				var dbo = db.db("stoich");
 				var query = {};
 				var sorter = {Score : 1};
-				var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+
+				var filter = {projection:{_id:0, Name:1, Score:1}};
+				if (propMass[1] == "true") {
+					filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+				}
+
 				dbo.collection(elementList).find(query, filter).sort(sorter).limit(50).toArray(function(err, result) {
 					pugParams.stoichs = []
 
@@ -214,7 +216,12 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 				var dbo = db.db("stoich");
 				var query = {};
 				var sorter = {Score : 1};
-				var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+
+				var filter = {projection:{_id:0, Name:1, Score:1}};
+				if (propMass[1] == "true") {
+					filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+				}
+
 				dbo.collection(collectionName).find(query, filter).sort(sorter).limit(50).toArray(function(err, result) {
 					if (result.length != 0) {
 						var pugData = [Object.keys(result[0])];
@@ -235,15 +242,30 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 							var dbo = db2.db("precursor");
 							var query = {};
 							var sorter = {Score : 1};
-							var filter = {projection:{_id:0, Key:0}};
+							var filter = {projection:{_id:0, Name:0, Key:0, In_Mass: 0}};
 							dbo.collection(collectionName).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
-								var pugData = [Object.keys(result[0])];
+								var pugData = [];
+								var header = [];
+								Object.keys(result[0]).forEach(function(key){
+									if (propMass[1] == "true" && key.includes("Mass")) {
+										header.push(key);
+									}
+									if (propMass[0] == "true" && !(key.includes("Mass"))) {
+										header.push(key);
+									}
+								});
+								pugData.push(header);
 
 								Object.keys(result).forEach(function(key) {
 									var row = [];
 
 									Object.keys(result[key]).forEach(function(subKey) {
-										row.push((result[key])[subKey]);
+										if (propMass[1] == "true" && subKey.includes("Mass")) {
+											row.push((result[key])[subKey]);
+										}
+										if (propMass[0] == "true" && !(subKey.includes("Mass"))) {
+											row.push((result[key])[subKey]);
+										}
 									});
 
 									pugData.push(row);
@@ -302,21 +324,18 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 	});
 });
 
-router.get('/calc/stoich/:quantity/:elements', function(req, res){
+router.get('/calc/stoich/:quantity/:elements/:propMass', function(req, res){
 	// get the list of elements from the request
 	var elements = req.params.elements.split("-");
-	var quantityMargin = req.params.quantity.split("-");
+	var propMass = req.params.propMass.split("-");
 
 	// get the quantity of points from the request
-	var numPoints = parseInt(quantityMargin[0]);
+	var numPoints = parseInt(req.params.quantity);
 	if (isNaN(numPoints)) {
 		numPoints = 20;
 	}
 
-	var margin = parseFloat(quantityMargin[1]);
-	if (isNaN(margin)) {
-		margin = 0.003;
-	}
+	var margin = 0.04;
 
 	// Order Elements for consistency
 	orderedElements = new Array(112).fill(null);
@@ -352,12 +371,18 @@ router.get('/calc/stoich/:quantity/:elements', function(req, res){
 				if (collinfo) {
 					var query = {};
 					var sorter = {Score : 1};
-					var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
 
-					if (err)
-						console.log(err);
+					var filter = {projection:{_id:0, Name:1, Score:1}};
+					if (propMass[1] == "true") {
+						filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+					}
+
+					console.log(filter);
 
 					dbo.collection(elementList).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
+						if (err)
+							console.log(err);
+
 						console.log("Pre-existing data found, using this instead: " + result.length + " results");
 						if (result.length != 0) {
 							var pugData = [Object.keys(result[0])];
