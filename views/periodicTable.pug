@@ -90,8 +90,14 @@ body
 												tbody
 													each i in stoichs[1]
 														tr
-															each col in i
-																td=col
+															each col,index in i
+																if index == 0
+																	td.stoich-result=col
+																else
+																	td=col
+												script
+													include ../public/js/stoichResult.js
+									
 							else
 								#list-stoichiometry.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='list-stoichiometry-list')
 									h3 No Data
@@ -108,7 +114,7 @@ body
 													each i in precursor[1]
 														tr
 															each col in i
-																td=col
+																td.precursor-result=col
 								else
 									#list-precursor.tab-pane.fade(role='tabpanel' aria-labelledby='list-precursor-list')
 										h3 No Data
