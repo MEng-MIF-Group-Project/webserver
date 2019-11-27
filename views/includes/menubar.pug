@@ -3,25 +3,23 @@ div(style="max-width: 180px")
         .list-group-item
             .row
                 .col
-                    h6 Option1
-                .col.self-align-right
-                    input(
-                        type='checkbox'
-                        name='Op1'
-                        checked)
-        //.list-group-item
+                    h6.text-center.font-weight-bold Display
             .row
                 .col
-                    h6 Option2
-                .col.self-align-right
-                    input(
-                        type='checkbox'
-                        name='Op2'
-                        checked)
+                    h6.text-left Proportion
+                .col.text-right
+                    input#prop_cbeckbox(type='checkbox' name='Op1')
+            .row
+                .col
+                    h6.text-left Mass
+                .col.text-right
+                    input#mass_checkbox(type='checkbox' name='Op2' checked)
+            
+        
         .list-group-item
             .row
                 .col
-                    h6 Margin
+                    h6.font-weight-bold Margin
             .row
                 .col(style="width: 100%;")
                     input(type="range", min="0.001", max="0.1", value="0.04", step="0.001", class="slider", id="margin-range")
@@ -30,7 +28,7 @@ div(style="max-width: 180px")
                         span#margin-range-value 0.04
             .row
                 .col
-                    h6 Samples
+                    h6.font-weight-bold Samples
             .row
                 .col(style="width: 100%;")
                     input(type="range", min="1", max="100", value="20", class="slider", id="sample-range")
