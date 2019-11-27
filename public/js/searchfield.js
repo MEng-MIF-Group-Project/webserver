@@ -2,7 +2,13 @@
 $( document ).ready(function() {
 	var submit_button = document.getElementById("submitSearch");
 	var input_field = document.getElementById("inputPrimary");
+
 	var precursorsList = document.getElementById("precursors-list");
+
+	if (precursorsList == null) {
+		precursorsList = -1;
+	}
+
 	var pointsCount = document.getElementById("sample-range-value");
 
 	var propCheckBox = document.getElementById("prop_cbeckbox");
@@ -15,10 +21,11 @@ $( document ).ready(function() {
 		var propMassString = (!propCheckBox.checked).toString() + "-" + (!massCheckBox.checked).toString()
 
 		var activePrecursors = [];
-
-		for (var i = 0; i < precursorsList.children.length; i++) {
-			if (precursorsList.children[i].classList.contains("active")) {
-				activePrecursors.push(precursorsList.children[i]);
+		if (precursorsList != -1) {
+			for (var i = 0; i < precursorsList.children.length; i++) {
+				if (precursorsList.children[i].classList.contains("active")) {
+					activePrecursors.push(precursorsList.children[i]);
+				}
 			}
 		}
 

@@ -51,13 +51,15 @@ body
 						script
 							include ../public/js/menubar.js
 					br
-					if precursors
+
+					if precursors && stoichs
 						.row
 							h3 Precursors
 						.row
 							include includes/precursorselect.pug
 							script
 								include ../public/js/precursorselect.js
+
 			if stoichs || precursor || xrd
 				br.mt-5.mb-4
 				.row.mt-5
@@ -97,7 +99,7 @@ body
 																	td=col
 												script
 													include ../public/js/stoichResult.js
-									
+
 							else
 								#list-stoichiometry.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='list-stoichiometry-list')
 									h3 No Data

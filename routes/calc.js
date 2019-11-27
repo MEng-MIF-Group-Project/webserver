@@ -15,7 +15,7 @@ const uuidv4 = require('uuid/v4');
 
 var router = express.Router();
 
-const url = 'mongodb://localhost:51966';
+const url = 'mongodb://localhost:32768';
 
 exeDir = path.resolve(__dirname, "..", "executables/")
 
@@ -160,6 +160,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 
 	var pugParams = {};
 	execPromise.then(function(resultPromise) {
+		console.log(jobID + " FINISHED " + collectionName);
 		if (resultPromise == -1) {
 			console.log("NO SOLUTIONS FOUND");
 			MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
@@ -209,10 +210,11 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 		}
 		else {
 			var collectionName = resultPromise;
-			console.log(jobID + " FINISHED " + collectionName);
 
 			// Connect to DB and extract points with good scores, sorted by score
 			MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+				if (err)
+					console.log(err);
 				var dbo = db.db("stoich");
 				var query = {};
 				var sorter = {Score : 1};
@@ -222,7 +224,14 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 					filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
 				}
 
-				dbo.collection(collectionName).find(query, filter).sort(sorter).limit(50).toArray(function(err, result) {
+				console.log(req.session.lastStoich);
+				dbo.collection(req.session.lastStoich).find(query, filter).sort(sorter).limit(50).toArray(function(err, result) {
+					if (err)
+						console.log(err);
+					else
+						console.log(result);
+						console.log(collectionName);
+
 					if (result.length != 0) {
 						var pugData = [Object.keys(result[0])];
 
@@ -356,6 +365,8 @@ router.get('/calc/stoich/:quantity/:elements/:propMass', function(req, res){
 		}
 	}
 	execString = execString + elementList;
+	req.session.lastStoich = elementList;
+	console.log("Set last stoich: " + req.session.lastStoich);
 
 	// async check if collection exists while building the rest of the exec string
 	var dbExistsCheck = new Promise(function(resolve, reject) {
@@ -546,8 +557,6 @@ router.get('/calc/stoich/:quantity/:elements/:propMass', function(req, res){
 						res.render("error", {text: "No Data For " + req.params.elements});
 					}
 					db.close();
-
-					req.session.lastStoich = collectionToUse;
 				});
 			});
 		}, function(err) {

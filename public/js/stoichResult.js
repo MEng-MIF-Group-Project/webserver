@@ -4,7 +4,9 @@ var submit_button = document.getElementById("submitSearch");
 var input_field = document.getElementById("inputPrimary");
 var precursorsList = document.getElementById("precursors-list");
 var pointsCount = document.getElementById("sample-range-value");
-var margin = document.getElementById("margin-range-value");
+
+var propCheckBox = document.getElementById("prop_cbeckbox");
+var massCheckBox = document.getElementById("mass_checkbox");
 
 const VALID_ELEMENTS = [
 	"H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar",
@@ -17,12 +19,12 @@ const VALID_ELEMENTS = [
 ]
 
 for (var i = 0; i < stoichs.length; ++i) {
-    stoichs[i].classList.add("btn");
-    stoichs[i].addEventListener("click", function() {
-        pointsCount = parseInt(pointsCount.textContent);
-        margin = parseFloat(margin.textContent);
-        
-        var activePrecursors = [];
+	stoichs[i].classList.add("btn");
+	stoichs[i].addEventListener("click", function() {
+		var propMassString = (!propCheckBox.checked).toString() + "-" + (!massCheckBox.checked).toString()
+		pointsCount = parseInt(pointsCount.textContent);
+
+		var activePrecursors = [];
 
 		for (var i = 0; i < precursorsList.children.length; i++) {
 			if (precursorsList.children[i].classList.contains("active")) {
@@ -30,32 +32,31 @@ for (var i = 0; i < stoichs.length; ++i) {
 			}
 		}
 
-        var marginPointsString = pointsCount.toString() + "-" + margin.toString();
-        var re = /[A-Z][a-z]?/g;
-        var s = this.textContent.toString();
-        var hs = this.textContent.toString();
-        //var m;
+		var re = /[A-Z][a-z]?/g;
+		var s = this.textContent.toString();
+		var hs = this.textContent.toString();
+		//var m;
 
-        String.prototype.splice = function(idx, rem, str) {
-            return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
-        };        
-        var indices = [];
-        do {
-            var m = re.exec(s);
-            console.log(m);
-            if (m) {
-                if (m.index != 0) {
-                    indices.push(m.index);
-                    //hs = hs.splice(m.index, 0, "-");
-                }
-            }
-        } while (m);
+		String.prototype.splice = function(idx, rem, str) {
+			return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+		};
+		var indices = [];
+		do {
+			var m = re.exec(s);
+			console.log(m);
+			if (m) {
+				if (m.index != 0) {
+					indices.push(m.index);
+					//hs = hs.splice(m.index, 0, "-");
+				}
+			}
+		} while (m);
 
-        for (var j = indices.length - 1; j >= 0; j--) {
-            hs = hs.splice(indices[j], 0, "-");
-        }
+		for (var j = indices.length - 1; j >= 0; j--) {
+			hs = hs.splice(indices[j], 0, "-");
+		}
 
-        if (activePrecursors.length != 0) {
+		if (activePrecursors.length != 0) {
 			var queryPrecursor = "";
 			for (var i = 0; i < activePrecursors.length - 1; i++) {
 				queryPrecursor = queryPrecursor + activePrecursors[i].textContent + "-";
@@ -64,13 +65,8 @@ for (var i = 0; i < stoichs.length; ++i) {
 
 			console.log(queryPrecursor);
 
-
-
-            
 			//console.log(window.location.origin + "/calc/pre");
-			window.location.replace(window.location.origin + "/calc/pre/" + marginPointsString + "/" + hs + "/" + queryPrecursor);
+			window.location.replace(window.location.origin + "/calc/pre/" + pointsCount.toString() + "/" + hs + "/" + queryPrecursor + "/" + propMassString);
 		}
-    });
-
-
+	});
 }
