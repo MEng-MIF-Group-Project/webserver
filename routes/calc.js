@@ -1,4 +1,4 @@
-/* 
+/*
  * TODO: Fix vulernable exec string formation, we need to check all elements of the array are valid elements or you can execute
  * any console command via "& <new command> &" in the search string
  *
@@ -29,6 +29,19 @@ const VALID_ELEMENTS = [
 	"Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr"
 ]
 
+// Helper function to check depth of a JSON object, used to check for single solution parses from the CSV to JSON
+function getDepth(obj) {
+	var depth = 0;
+	if (obj.children) {
+		obj.children.forEach(function (d) {
+			var tmpDepth = getDepth(d)
+			if (tmpDepth > depth) {
+				depth = tmpDepth
+			}
+		})
+	}
+	return 1 + depth
+}
 
 router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 	// get the list of elements, precursors, and runtime data from the request
@@ -47,45 +60,32 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 		margin = 0.003;
 	}
 
-	// build the execution string to be called in EXEC 
-	var execString = './a.out --stoichs=\"';
-	for (var i = 0; i < (elements.length - 1); i++) {
-		if (VALID_ELEMENTS.includes(elements[i])) {
-			execString = execString + elements[i] + ":"
+	// Order Elements for consistency
+	orderedElements = new Array(112).fill(null);
+	for (var i = 0; i < (elements.length); i++) {
+		var eleIndex = VALID_ELEMENTS.indexOf(elements[i].replace(/[0-9]/g,''));
+		orderedElements.splice(eleIndex,0,elements[i]);
+	}
+	var elements = orderedElements.filter(function (el) {
+		return el != null;
+	});
+
+	// build the execution string to be called in EXEC
+	var execString = 'samply.exe --stoichs=\"';
+	var elementList = '';
+	for (var i = 0; i < (elements.length); i++) {
+		if (VALID_ELEMENTS.includes(elements[i].replace(/[0-9]/g,''))) {
+			elementList = elementList + elements[i];
 		}
 	}
-	if (VALID_ELEMENTS.includes(elements[elements.length - 1])) {
-		execString = execString + elements[elements.length - 1]
-	}
+	execString = execString + elementList;
 
 	execString = execString + "\" --precursors=\"";
-	for (var i = 0; i < (precursor.length); i++) {
-		var testString = precursor[i];
-		var element = "";
-		var quantity = "";
-
-		var m; 
-		var re = /([A-Z][a-z]?)(\d*)/g;
-		do {
-			m = re.exec(testString);
-			if (m) {
-				//console.log(m[1], m[2]);
-				if (VALID_ELEMENTS.includes(m[1])) {
-					if (m[2] != "") {
-						execString = execString + m[1] + '#' + m[2] + ':';
-					}
-					else {
-						execString = execString + m[1] + ':';
-					}
-				}
-			}
-		} while (m);
-
-		execString = execString.substring(0, execString.length - 1);
-		execString = execString + ' '; 
+	for (var i = 0; i < (precursor.length - 1); i++) {
+		execString = execString + precursor[i] + ' ';
 	}
+	execString = execString + precursor[precursor.length - 1]
 
-	execString = execString.substring(0, execString.length - 1);
 	execString = execString + "\" --margin=" + margin.toString() + " --samples=1000 --mode=1";
 	console.log(execString);
 
@@ -100,7 +100,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 				reject(error);
 
 			// Maybe put this in a log file instead of cluttering the console
-			console.log(stdout.toString());
+			// console.log(stdout.toString());
 
 			// Grab the CSV created with a regex like expression
 			glob(path.join(exeDir, "*.csv"), {}, (err, files) => {
@@ -116,17 +116,18 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 					if (firstChar == '1') {
 						// CSV to JSON
 						csv().fromFile(files[file]).then((jsonObj)=>{
+							console.log("DEPTH OF JSON DATA: " + getDepth(jsonObj));
 							// Convert all numberic strings to their float equiv so the DB gets the right datatype
 							Object.keys(jsonObj).forEach(function(key) {
 								Object.keys(jsonObj[key]).forEach(function(subKey) {
 									if (subKey != "Key" && subKey != "Name") {
-										(jsonObj[key])[subKey] = parseFloat((jsonObj[key])[subKey]); 
+										(jsonObj[key])[subKey] = parseFloat((jsonObj[key])[subKey]);
 									}
 								});
 							});
 
 							// Connect to DB and insert new points
-							MongoClient.connect(url, function(err, db) {
+							MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
 								if (err)
 									reject(err)
 
@@ -139,16 +140,16 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 
 									// Delete file now its been used
 									fs.unlink(files[file], function (err) {
-										if (err) 
+										if (err)
 											reject(err);
 										// if no error, file has been deleted successfully
 										console.log('File deleted');
 
-										// release promise so the program can continue 
+										// release promise so the program can continue
 										resolve(collectionToUse);
 									});
 								});
-							}); 
+							});
 						});
 					}
 				}
@@ -163,7 +164,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 		console.log(jobID + " FINISHED " + collectionName);
 
 		// Connect to DB and extract points with good scores, sorted by score
-		MongoClient.connect(url, function(err, db) {
+		MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
 			var dbo = db.db("stoich");
 			var query = {};
 			var sorter = {Score : 1};
@@ -176,15 +177,15 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 						var row = [];
 
 						Object.keys(result[key]).forEach(function(subKey) {
-							row.push((result[key])[subKey]); 
+							row.push((result[key])[subKey]);
 						});
 
 						pugData.push(row);
 					});
 
-					pugParams.stoichs = [pugData[0], pugData.slice(1)]; 
+					pugParams.stoichs = [pugData[0], pugData.slice(1)];
 
-					MongoClient.connect(url, function(err2, db2) {
+					MongoClient.connect(url, { useUnifiedTopology: true }, function(err2, db2) {
 						var dbo = db2.db("precursor");
 						var query = {};
 						var sorter = {Score : 1};
@@ -196,7 +197,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 								var row = [];
 
 								Object.keys(result[key]).forEach(function(subKey) {
-									row.push((result[key])[subKey]); 
+									row.push((result[key])[subKey]);
 								});
 
 								pugData.push(row);
@@ -208,7 +209,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 							console.log("Result length: " + Object.keys(result[0]).length);
 							if (Object.keys(result[0]).length > 3) {
 								Object.keys(result).forEach(function(key) {
-									var row = {}; 
+									var row = {};
 
 									row.A = (result[key])[Object.keys(result[key])[0]];
 									row.B = (result[key])[Object.keys(result[key])[1]];
@@ -224,9 +225,9 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 							}
 
 							diagramData.largestScore = largestScore;
-							console.log(diagramData);
+							//console.log(diagramData);
 
-							pugParams.diagram = diagramData; 
+							pugParams.diagram = diagramData;
 							pugParams.precursor = [pugData[0], pugData.slice(1)];
 							pugParams.precursors = [
 								{Name: "Li2S"},
@@ -237,8 +238,8 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 								{Name: "SnS2"},
 								{Name: "LiCl"}
 							]
-							console.log(pugParams);
-							res.render("periodicTable", pugParams); 
+							//console.log(pugParams);
+							res.render("periodicTable", pugParams);
 						});
 					});
 				}
@@ -247,7 +248,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor', function(req, res){
 				}
 				db.close();
 			});
-		}); 
+		});
 	}, function(err) {
 		console.log(err);
 		res.render("error", {text: "Calculator failed to run, please wait and try again."})
@@ -270,143 +271,220 @@ router.get('/calc/stoich/:quantity/:elements', function(req, res){
 		margin = 0.003;
 	}
 
-	// build the execution string to be called in EXEC 
-	var execString = './a.out --stoichs=';
-	for (var i = 0; i < (elements.length - 1); i++) {
-		if (VALID_ELEMENTS.includes(elements[i])) {
-			execString = execString + elements[i] + ":"
+	// Order Elements for consistency
+	orderedElements = new Array(112).fill(null);
+	for (var i = 0; i < (elements.length); i++) {
+		var eleIndex = VALID_ELEMENTS.indexOf(elements[i].replace(/[0-9]/g,''));
+		orderedElements.splice(eleIndex,0,elements[i]);
+	}
+	var elements = orderedElements.filter(function (el) {
+		return el != null;
+	});
+
+	// build the execution string to be called in EXEC
+	var execString = 'samply.exe --stoichs=\"';
+	var elementList = '';
+	for (var i = 0; i < (elements.length); i++) {
+		if (VALID_ELEMENTS.includes(elements[i].replace(/[0-9]/g,''))) {
+			elementList = elementList + elements[i];
 		}
 	}
-	if (VALID_ELEMENTS.includes(elements[elements.length - 1])) {
-		execString = execString + elements[elements.length - 1]
-	}
+	execString = execString + elementList;
 
-	execString = execString + ' --margin=' + margin.toString() + ' --samples=1000 --mode=0'
-	var jobID = uuidv4();
+	// async check if collection exists while building the rest of the exec string
+	var dbExistsCheck = new Promise(function(resolve, reject) {
+		MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+			if (err)
+				reject(err);
 
-	var collectionToUse = "";
-
-	// Create promise so we can run code with a guarantee this finished first
-	var execPromise = new Promise(function(resolve, reject) {
-		console.log(jobID + " RUNNING:  " + execString);
-
-		// Run the subprocess
-		exec(execString, {
-			cwd: exeDir
-		}, function(error, stdout, stderr) {
-			if (error)
-				reject(error);
-
-			// Maybe put this in a log file instead of cluttering the console
-			console.log(stdout.toString());
-
-			// Grab the CSV created with a regex like expression
-			glob(path.join(exeDir, "*.csv"), {}, (err, files) => {
+			var dbo = db.db("stoich");
+			dbo.listCollections({name: elementList}).next(function(err, collinfo) {
 				if (err)
-					reject(err);
+						reject(err);
 
-				for (var file in files) {
-					// Check the first char matches the mode of the calc, and extract the database table name from it
-					var fileName =  path.basename(files[file], path.extname(files[file]));
-					var firstChar = fileName.charAt(0);
-					collectionToUse = fileName.substring(1,999);
+				if (collinfo) {
+					var query = {};
+					var sorter = {Score : 1};
+					var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
 
-					if (firstChar == '0') {
-						// CSV to JSON
-						csv().fromFile(files[file]).then((jsonObj)=>{
-							// Convert all numberic strings to their float equiv so the DB gets the right datatype
-							Object.keys(jsonObj).forEach(function(key) {
-								Object.keys(jsonObj[key]).forEach(function(subKey) {
-									if (subKey != "Key" && subKey != "Name") {
-										(jsonObj[key])[subKey] = parseFloat((jsonObj[key])[subKey]); 
-									}
+					if (err)
+						console.log(err);
+
+					dbo.collection(elementList).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
+						console.log("Pre-existing data found, using this instead: " + result.length + " results");
+						if (result.length != 0) {
+							var pugData = [Object.keys(result[0])];
+
+							Object.keys(result).forEach(function(key) {
+								var row = [];
+
+								Object.keys(result[key]).forEach(function(subKey) {
+									row.push((result[key])[subKey]);
 								});
+
+								pugData.push(row);
 							});
+							var pugParams = {};
 
-							// Connect to DB and insert new points
-							MongoClient.connect(url, function(err, db) {
-								if (err)
-									reject(err)
+							pugParams.stoichs = [pugData[0], pugData.slice(1)];
+							pugParams.precursors = [
+								{Name: "Li2S"},
+								{Name: "Al2S3"},
+								{Name: "Al2O3"},
+								{Name: "LiAlO2"},
+								{Name: "Li2O"},
+								{Name: "SnS2"},
+								{Name: "LiCl"}
+							]
+							//console.log(pugData);
 
-								var dbo = db.db("stoich");
-								//dbo.collection(collectionToUse).drop();
-								dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
-									db.close();
-
-									// Delete file now its been used
-									fs.unlink(files[file], function (err) {
-										if (err) 
-											reject(err);
-										// if no error, file has been deleted successfully
-										console.log('File deleted');
-
-										// release promise so the program can continue 
-										resolve(collectionToUse);
-									});
-								});
-							}); 
-						});
-					}
+							res.render("periodicTable", pugParams);
+						}
+						else {
+							res.render("error", {text: "Table " + elementList + " exists, but no data was extracted"});
+						}
+						db.close();
+					});
+				}
+				else {
+					resolve();
 				}
 			});
 		});
 	});
 
-	execPromise.then(function(result) {
-		var collectionName = result;
-		console.log(jobID + " FINISHED");
+	execString = execString + '\" --margin=' + margin.toString() + ' --samples=1000 --mode=0'
+	var jobID = uuidv4();
 
-		// Connect to DB and extract points with good scores, sorted by score
-		MongoClient.connect(url, function(err, db) {
-			var dbo = db.db("stoich");
-			var query = {};
-			var sorter = {Score : 1};
-			var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+	var collectionToUse = "";
 
-			if (err)
-				console.log(err);
+	dbExistsCheck.then(function(result) {
+		// Create promise so we can run code with a guarantee this finished first
+		var execPromise = new Promise(function(resolve, reject) {
+			console.log(jobID + " RUNNING:  " + execString);
 
-			dbo.collection(collectionToUse).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
-				console.log("RESULT LEN " + result.length);
-				if (result.length != 0) {
-					var pugData = [Object.keys(result[0])];
+			// Run the subprocess
+			exec(execString, {
+				cwd: exeDir
+			}, function(error, stdout, stderr) {
+				if (error)
+					reject(error);
 
-					Object.keys(result).forEach(function(key) {
-						var row = [];
+				// Maybe put this in a log file instead of cluttering the console
+				// console.log(stdout.toString());
 
-						Object.keys(result[key]).forEach(function(subKey) {
-							row.push((result[key])[subKey]); 
-						});
+				// Grab the CSV created with a regex like expression
+				glob(path.join(exeDir, "*.csv"), {}, (err, files) => {
+					if (err)
+						reject(err);
 
-						pugData.push(row);
-					});
-					var pugParams = {};
+					for (var file in files) {
+						// Check the first char matches the mode of the calc, and extract the database table name from it
+						var fileName =  path.basename(files[file], path.extname(files[file]));
+						var firstChar = fileName.charAt(0);
+						collectionToUse = fileName.substring(1,999);
 
-					pugParams.stoichs = [pugData[0], pugData.slice(1)];
-					pugParams.precursors = [
-						{Name: "Li2S"},
-						{Name: "Al2S3"},
-						{Name: "Al2O3"},
-						{Name: "LiAlO2"},
-						{Name: "Li2O"},
-						{Name: "SnS2"},
-						{Name: "LiCl"}
-					]
-					//console.log(pugData);
+						if (firstChar == '0') {
+							// CSV to JSON
+							csv().fromFile(files[file]).then((jsonObj)=>{
+								//console.log("DEPTH OF JSON DATA: " + getDepth(jsonObj));
+								// Convert all numberic strings to their float equiv so the DB gets the right datatype
+								Object.keys(jsonObj).forEach(function(key) {
+									Object.keys(jsonObj[key]).forEach(function(subKey) {
+										if (subKey != "Key" && subKey != "Name") {
+											(jsonObj[key])[subKey] = parseFloat((jsonObj[key])[subKey]);
+										}
+									});
+								});
 
-					res.render("periodicTable", pugParams);
-				}
-				else {
-					res.render("error", {text: "No Data For " + req.params.elements});
-				}
-				db.close();
+								// Connect to DB and insert new points
+								MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+									if (err)
+										reject(err)
 
-				req.session.lastStoich = collectionToUse;
+									var dbo = db.db("stoich");
+									//dbo.collection(collectionToUse).drop();
+									dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
+										db.close();
+
+										// Delete file now its been used
+										fs.unlink(files[file], function (err) {
+											if (err)
+												reject(err);
+											// if no error, file has been deleted successfully
+											console.log('File deleted');
+
+											// release promise so the program can continue
+											resolve(collectionToUse);
+										});
+									});
+								});
+							});
+						}
+					}
+				});
 			});
-		}); 
-	}, function(err) {
+		});
+
+		execPromise.then(function(result) {
+			var collectionName = result;
+			console.log(jobID + " FINISHED");
+
+			// Connect to DB and extract points with good scores, sorted by score
+			MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
+				var dbo = db.db("stoich");
+				var query = {};
+				var sorter = {Score : 1};
+				var filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
+
+				if (err)
+					console.log(err);
+
+				dbo.collection(collectionToUse).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
+					//console.log("RESULT LEN " + result.length);
+					if (result.length != 0) {
+						var pugData = [Object.keys(result[0])];
+
+						Object.keys(result).forEach(function(key) {
+							var row = [];
+
+							Object.keys(result[key]).forEach(function(subKey) {
+								row.push((result[key])[subKey]);
+							});
+
+							pugData.push(row);
+						});
+						var pugParams = {};
+
+						pugParams.stoichs = [pugData[0], pugData.slice(1)];
+						pugParams.precursors = [
+							{Name: "Li2S"},
+							{Name: "Al2S3"},
+							{Name: "Al2O3"},
+							{Name: "LiAlO2"},
+							{Name: "Li2O"},
+							{Name: "SnS2"},
+							{Name: "LiCl"}
+						]
+						//console.log(pugData);
+
+						res.render("periodicTable", pugParams);
+					}
+					else {
+						res.render("error", {text: "No Data For " + req.params.elements});
+					}
+					db.close();
+
+					req.session.lastStoich = collectionToUse;
+				});
+			});
+		}, function(err) {
+			console.log(err);
+			res.render("error", {text: "Calculator failed to run, please wait and try again."})
+		});
+	}, function(err){
 		console.log(err);
-		res.render("error", {text: "Calculator failed to run, please wait and try again."})
+		res.render("error", {text: "DB EXISTS query failed, please wait and try again."})
 	});
 });
 
