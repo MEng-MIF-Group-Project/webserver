@@ -19,8 +19,16 @@ const VALID_ELEMENTS = [
 ]
 
 for (var i = 0; i < stoichs.length; ++i) {
-	stoichs[i].classList.add("btn");
-	stoichs[i].addEventListener("click", function() {
+    var el = document.createElement("button");
+    el.style.width = "36px";
+    el.style.height = "28px";
+    el.style.cssFloat = "right";
+    el.classList.add("btn");
+    el.classList.add("text-right");
+    el.textContent = " ";
+    stoichs[i].appendChild(el);
+	//stoichs[i].classList.add("btn");
+	el.addEventListener("click", function() {
 		var propMassString = (!propCheckBox.checked).toString() + "-" + (!massCheckBox.checked).toString()
 		pointsCount = parseInt(pointsCount.textContent);
 
@@ -32,9 +40,10 @@ for (var i = 0; i < stoichs.length; ++i) {
 			}
 		}
 
-		var re = /[A-Z][a-z]?/g;
-		var s = this.textContent.toString();
-		var hs = this.textContent.toString();
+        var re = /[A-Z][a-z]?/g;
+        //console.log(this.parentNode.textContent.toString());
+		var s = this.parentNode.textContent.toString();
+		var hs = this.parentNode.textContent.toString();
 		//var m;
 
 		String.prototype.splice = function(idx, rem, str) {
@@ -47,7 +56,7 @@ for (var i = 0; i < stoichs.length; ++i) {
 			if (m) {
 				if (m.index != 0) {
 					indices.push(m.index);
-					//hs = hs.splice(m.index, 0, "-");
+                    //hs = hs.splice(m.index, 0, "-");
 				}
 			}
 		} while (m);
@@ -55,6 +64,8 @@ for (var i = 0; i < stoichs.length; ++i) {
 		for (var j = indices.length - 1; j >= 0; j--) {
 			hs = hs.splice(indices[j], 0, "-");
 		}
+        
+        console.log("Returned string: " + hs);
 
 		if (activePrecursors.length != 0) {
 			var queryPrecursor = "";
@@ -63,7 +74,7 @@ for (var i = 0; i < stoichs.length; ++i) {
 			}
 			queryPrecursor = queryPrecursor + activePrecursors[activePrecursors.length - 1].textContent;
 
-			console.log(queryPrecursor);
+			//console.log(queryPrecursor);
 
 			//console.log(window.location.origin + "/calc/pre");
 			window.location.replace(window.location.origin + "/calc/pre/" + pointsCount.toString() + "/" + hs + "/" + queryPrecursor + "/" + propMassString);
