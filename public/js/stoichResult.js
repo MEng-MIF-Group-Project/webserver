@@ -8,6 +8,8 @@ var pointsCount = document.getElementById("sample-range-value");
 var propCheckBox = document.getElementById("prop_cbeckbox");
 var massCheckBox = document.getElementById("mass_checkbox");
 
+var quantity = document.getElementById("desired_quantity");
+
 const VALID_ELEMENTS = [
 	"H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar",
 	"K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr",
@@ -29,7 +31,7 @@ for (var i = 0; i < stoichs.length; ++i) {
     stoichs[i].appendChild(el);
 	//stoichs[i].classList.add("btn");
 	el.addEventListener("click", function() {
-		var propMassString = (!propCheckBox.checked).toString() + "-" + (!massCheckBox.checked).toString()
+		var propMassString = (!propCheckBox.checked).toString() + "-" + (!massCheckBox.checked).toString() + "-" + parseFloat(quantity.value)
 		pointsCount = parseInt(pointsCount.textContent);
 
 		var activePrecursors = [];
@@ -76,8 +78,10 @@ for (var i = 0; i < stoichs.length; ++i) {
 
 			//console.log(queryPrecursor);
 
+			console.log(hs);
+
 			//console.log(window.location.origin + "/calc/pre");
-			window.location.replace(window.location.origin + "/calc/pre/" + pointsCount.toString() + "/" + hs + "/" + queryPrecursor + "/" + propMassString);
+			window.location.replace(window.location.origin + "/calc/pre/" + pointsCount.toString() + "/" + hs.trim() + "/" + queryPrecursor + "/" + propMassString);
 		}
 	});
 }

@@ -50,8 +50,8 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 	var propMass = req.params.propMass.split("-");
 
 	var dmass = parseFloat(propMass[2]);
-	if (dmass == NaN) {
-		dmass = 1;
+	if (isNaN(dmass)) {
+		dmass = 0.5;
 	}
 
 	// get the quantity of points from the request

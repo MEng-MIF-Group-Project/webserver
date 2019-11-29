@@ -16,7 +16,6 @@ $( document ).ready(function() {
 
 	var quantity = document.getElementById("desired_quantity");
 
-
 	var cache;
 	submit_button.addEventListener("click", function(){
 		pointsCount = parseInt(pointsCount.textContent);
