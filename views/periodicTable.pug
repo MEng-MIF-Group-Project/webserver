@@ -127,8 +127,12 @@ body
 
 			if diagram
 				script.
-					var rawData = JSON.parse('!{JSON.stringify(diagram)}').data;
-					var largestScore = JSON.parse('!{JSON.stringify(diagram)}').largestScore;
+					var serverData = JSON.parse('!{JSON.stringify(diagram)}'); 
+					var rawData = serverData.data;
+					var largestScore = serverData.largestScore;
+					var lowestScore = serverData.lowestScore;
+					var diagramType = serverData.diagramType;
+					var axisNames = serverData.axisNames;
 
 				.row
 					h3 Diagram

@@ -240,3 +240,11 @@ border-radius: 10px; }
 	background: #2BBBAD;
 	border-color: #2BBBAD !important;
 }
+
+table {
+	background-color: #fffcfb;
+}
+
+.scrollbar {
+	background-color: #fffcfb;
+}

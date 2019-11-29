@@ -49,6 +49,11 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 	var precursor = req.params.precursor.split("-");
 	var propMass = req.params.propMass.split("-");
 
+	var dmass = parseFloat(propMass[2]);
+	if (dmass == NaN) {
+		dmass = 1;
+	}
+
 	// get the quantity of points from the request
 	var numPoints = parseInt(req.params.quantity);
 	if (isNaN(numPoints)) {
@@ -68,7 +73,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 	});
 
 	// build the execution string to be called in EXEC
-	var execString = 'samply.exe --stoichs=\"';
+	var execString = './a.out --stoichs=\"';
 	var elementList = '';
 	for (var i = 0; i < (elements.length); i++) {
 		if (VALID_ELEMENTS.includes(elements[i].replace(/[0-9]/g,''))) {
@@ -83,7 +88,7 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 	}
 	execString = execString + precursor[precursor.length - 1]
 
-	execString = execString + "\" --margin=" + margin.toString() + " --samples=1000 --mode=1";
+	execString = execString + "\" --margin=" + margin.toString() + " --samples=1000 --mode=1 --dmass=" + dmass;
 	console.log(execString);
 
 	var collectionToUse = "";
@@ -229,8 +234,8 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 					if (err)
 						console.log(err);
 					else
-						console.log(result);
-						console.log(collectionName);
+						//console.log(result);
+						//console.log(collectionName);
 
 					if (result.length != 0) {
 						var pugData = [Object.keys(result[0])];
@@ -281,17 +286,63 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 								});
 
 								var diagramData = {};
+								var useDiagramData = false;
 								diagramData.data = [];
 								var largestScore = 0;
-								console.log("Result length: " + Object.keys(result[0]).length);
-								if (Object.keys(result[0]).length > 3) {
-									Object.keys(result).forEach(function(key) {
+								var diagramType = -1;
+								var lowestScore = Infinity;
+								var axisNames = [];
+								//console.log("Result length: " + Object.keys(result[0]).length);
+								//console.table(result);
+
+								// strip masses if they exist for diagram data
+								var resultNoMass = {};
+								Object.keys(result).forEach(function(key) {
+									var entry = {};
+									Object.keys(result[key]).forEach(function(subKey) {
+										if (!subKey.includes("Mass")) {
+											entry[subKey] = (result[key])[subKey];
+										}
+									});
+									resultNoMass[key] = entry;
+								});
+								//console.log(resultNoMass);
+
+								// form diagram data from resultNoMass
+								// -1 from keys to account for score column, we just want the number of precursors
+								if ((Object.keys(resultNoMass[0]).length - 1) == 3) {
+									axisNames = Object.keys(resultNoMass[0]);
+									axisNames = axisNames.slice(0, axisNames.length - 1);
+
+									Object.keys(resultNoMass).forEach(function(key) {
 										var row = {};
 
-										row.A = (result[key])[Object.keys(result[key])[0]];
-										row.B = (result[key])[Object.keys(result[key])[1]];
-										row.C = (result[key])[Object.keys(result[key])[2]];
-										row.label = (result[key])[Object.keys(result[key])[Object.keys(result[key]).length - 1]];
+										row.A = (resultNoMass[key])[Object.keys(resultNoMass[key])[0]];
+										row.B = (resultNoMass[key])[Object.keys(resultNoMass[key])[1]];
+										row.C = (resultNoMass[key])[Object.keys(resultNoMass[key])[2]];
+										row.label = (resultNoMass[key])[Object.keys(resultNoMass[key])[Object.keys(resultNoMass[key]).length - 1]];
+
+										if (row.label > largestScore) {
+											largestScore = row.label; 
+										}
+
+										if (row.label < lowestScore) {
+											lowestScore = row.label; 
+										}
+
+										diagramData.data.push(row);
+									});
+
+									useDiagramData = true;
+									diagramType = 3;
+								}
+								else if ((Object.keys(resultNoMass[0]).length - 1) == 2) {
+										Object.keys(resultNoMass).forEach(function(key) {
+										var row = {};
+
+										row.A = (resultNoMass[key])[Object.keys(resultNoMass[key])[0]];
+										row.B = (resultNoMass[key])[Object.keys(resultNoMass[key])[1]];
+										row.label = (resultNoMass[key])[Object.keys(resultNoMass[key])[Object.keys(resultNoMass[key]).length - 1]];
 
 										if (row.label > largestScore) {
 											largestScore = row.label
@@ -299,12 +350,23 @@ router.get('/calc/pre/:quantity/:elements/:precursor/:propMass', function(req, r
 
 										diagramData.data.push(row);
 									});
-								}
 
+									useDiagramData = true;
+									diagramType = 2;
+								}
+								console.log("Diagram type " + diagramType);
+								if (axisNames != []) {
+									diagramData.axisNames = axisNames;
+								}
+								diagramData.diagramType = diagramType;
+								diagramData.lowestScore = lowestScore;
 								diagramData.largestScore = largestScore;
 								//console.log(diagramData);
 
-								pugParams.diagram = diagramData;
+								if (useDiagramData == true) {
+									pugParams.diagram = diagramData;
+								}
+								
 								pugParams.precursor = [pugData[0], pugData.slice(1)];
 								pugParams.precursors = [
 									{Name: "Li2S"},
@@ -357,7 +419,7 @@ router.get('/calc/stoich/:quantity/:elements/:propMass', function(req, res){
 	});
 
 	// build the execution string to be called in EXEC
-	var execString = 'samply.exe --stoichs=\"';
+	var execString = './a.out --stoichs=\"';
 	var elementList = '';
 	for (var i = 0; i < (elements.length); i++) {
 		if (VALID_ELEMENTS.includes(elements[i].replace(/[0-9]/g,''))) {
@@ -388,7 +450,7 @@ router.get('/calc/stoich/:quantity/:elements/:propMass', function(req, res){
 						filter = {projection:{_id:0, Name:1, Mass:1, Score:1}};
 					}
 
-					console.log(filter);
+					//console.log(filter);
 
 					dbo.collection(elementList).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
 						if (err)
@@ -487,7 +549,7 @@ router.get('/calc/stoich/:quantity/:elements/:propMass', function(req, res){
 
 									var dbo = db.db("stoich");
 									//dbo.collection(collectionToUse).drop();
-									dbo.collection(collectionToUse).insertMany(jsonObj, function(err, doc) {
+									dbo.collection(elementList).insertMany(jsonObj, function(err, doc) {
 										db.close();
 
 										// Delete file now its been used
@@ -498,7 +560,7 @@ router.get('/calc/stoich/:quantity/:elements/:propMass', function(req, res){
 											console.log('File deleted');
 
 											// release promise so the program can continue
-											resolve(collectionToUse);
+											resolve(elementList);
 										});
 									});
 								});
@@ -523,7 +585,7 @@ router.get('/calc/stoich/:quantity/:elements/:propMass', function(req, res){
 				if (err)
 					console.log(err);
 
-				dbo.collection(collectionToUse).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
+				dbo.collection(elementList).find(query, filter).sort(sorter).limit(numPoints).toArray(function(err, result) {
 					//console.log("RESULT LEN " + result.length);
 					if (result.length != 0) {
 						var pugData = [Object.keys(result[0])];

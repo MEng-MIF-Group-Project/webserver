@@ -14,11 +14,13 @@ $( document ).ready(function() {
 	var propCheckBox = document.getElementById("prop_cbeckbox");
 	var massCheckBox = document.getElementById("mass_checkbox");
 
+	var quantity = document.getElementById("desired_quantity");
+
 
 	var cache;
 	submit_button.addEventListener("click", function(){
 		pointsCount = parseInt(pointsCount.textContent);
-		var propMassString = (!propCheckBox.checked).toString() + "-" + (!massCheckBox.checked).toString()
+		var propMassString = (!propCheckBox.checked).toString() + "-" + (!massCheckBox.checked).toString() + "-" + parseFloat(quantity.value); 
 
 		var activePrecursors = [];
 		if (precursorsList != -1) {
